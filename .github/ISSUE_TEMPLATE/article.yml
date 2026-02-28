@@ -1,0 +1,81 @@
+name: Submit an Article
+description: Share a blog post or article about Microsoft Fabric Data Agents.
+title: "[Article] "
+labels: ["content-submission", "article"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for sharing an article with the community. Please fill out the fields below. All fields marked with an asterisk (*) are required.
+
+  - type: input
+    id: title
+    attributes:
+      label: Article Title
+      description: The title of the article as it appears on the source.
+      placeholder: "e.g. Getting Started with Microsoft Fabric Data Agents"
+    validations:
+      required: true
+
+  - type: input
+    id: url
+    attributes:
+      label: Article URL
+      description: The full URL to the article.
+      placeholder: "https://example.com/my-article"
+    validations:
+      required: true
+
+  - type: input
+    id: author
+    attributes:
+      label: Author
+      description: The original author of the article.
+      placeholder: "e.g. Jane Smith"
+    validations:
+      required: true
+
+  - type: input
+    id: publish_date
+    attributes:
+      label: Publish Date
+      description: When the article was published (YYYY-MM-DD).
+      placeholder: "2025-06-15"
+    validations:
+      required: true
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: A brief description of what the article covers (2-3 sentences).
+      placeholder: "This article explains how to..."
+    validations:
+      required: true
+
+  - type: input
+    id: tags
+    attributes:
+      label: Tags
+      description: Comma-separated tags for discoverability.
+      placeholder: "data-agent, fabric, tutorial, getting-started"
+    validations:
+      required: true
+
+  - type: input
+    id: contributor
+    attributes:
+      label: Your Name
+      description: Your name as you'd like it to appear on the site.
+      placeholder: "e.g. Jane Smith"
+    validations:
+      required: true
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Additional Notes
+      description: Any additional context about why this article is useful (optional).
+      placeholder: "Great introduction for beginners..."
+    validations:
+      required: false

@@ -1,0 +1,72 @@
+name: Submit a Video
+description: Share a YouTube video about Microsoft Fabric Data Agents.
+title: "[Video] "
+labels: ["content-submission", "video"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for sharing a video with the community. Please fill out the fields below.
+
+  - type: input
+    id: title
+    attributes:
+      label: Video Title
+      description: The title of the video.
+      placeholder: "e.g. Building Your First Data Agent"
+    validations:
+      required: true
+
+  - type: input
+    id: youtube_id
+    attributes:
+      label: YouTube Video ID
+      description: The ID from the YouTube URL. For example, if the URL is https://youtube.com/watch?v=abc123, the ID is "abc123".
+      placeholder: "abc123"
+    validations:
+      required: true
+
+  - type: input
+    id: speaker
+    attributes:
+      label: Speaker / Presenter
+      description: The person presenting in the video.
+      placeholder: "e.g. John Doe"
+    validations:
+      required: true
+
+  - type: input
+    id: publish_date
+    attributes:
+      label: Publish Date
+      description: When the video was published (YYYY-MM-DD).
+      placeholder: "2025-06-15"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: A brief description of what the video covers (2-3 sentences).
+      placeholder: "This video walks through..."
+    validations:
+      required: true
+
+  - type: input
+    id: tags
+    attributes:
+      label: Tags
+      description: Comma-separated tags for discoverability.
+      placeholder: "tutorial, demo, beginner"
+    validations:
+      required: true
+
+  - type: input
+    id: contributor
+    attributes:
+      label: Your Name
+      description: Your name as you'd like it to appear on the site.
+      placeholder: "e.g. Jane Smith"
+    validations:
+      required: true

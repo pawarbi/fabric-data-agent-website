@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Website
+    url: https://pawarbi.github.io/fabric-data-agent-website/
+    about: Visit the Fabric Data Agent community website
+  - name: Contribution Guidelines
+    url: https://pawarbi.github.io/fabric-data-agent-website/contribute/
+    about: Read the full contribution guidelines

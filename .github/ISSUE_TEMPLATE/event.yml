@@ -1,0 +1,93 @@
+name: Submit an Event
+description: Share an upcoming conference, webinar, meetup, or session about Fabric Data Agents.
+title: "[Event] "
+labels: ["content-submission", "event"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for sharing an event with the community. Please fill out the fields below.
+
+  - type: input
+    id: title
+    attributes:
+      label: Event Title
+      description: The name of the event.
+      placeholder: "e.g. Microsoft Fabric Community Conference 2026"
+    validations:
+      required: true
+
+  - type: input
+    id: url
+    attributes:
+      label: Event URL
+      description: Link to the event page or registration.
+      placeholder: "https://example.com/event"
+    validations:
+      required: true
+
+  - type: input
+    id: date
+    attributes:
+      label: Event Date
+      description: When the event takes place (YYYY-MM-DD).
+      placeholder: "2026-06-15"
+    validations:
+      required: true
+
+  - type: input
+    id: end_date
+    attributes:
+      label: End Date (optional)
+      description: If the event spans multiple days (YYYY-MM-DD).
+      placeholder: "2026-06-17"
+    validations:
+      required: false
+
+  - type: input
+    id: location
+    attributes:
+      label: Location
+      description: Where the event takes place.
+      placeholder: "e.g. Virtual, Seattle WA, London UK"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: type
+    attributes:
+      label: Event Type
+      options:
+        - conference
+        - webinar
+        - meetup
+        - session
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: A brief description of the event (2-3 sentences).
+      placeholder: "This event covers..."
+    validations:
+      required: true
+
+  - type: input
+    id: tags
+    attributes:
+      label: Tags
+      description: Comma-separated tags for discoverability.
+      placeholder: "conference, fabric, data-agent"
+    validations:
+      required: true
+
+  - type: input
+    id: contributor
+    attributes:
+      label: Your Name
+      description: Your name as you'd like it to appear on the site.
+      placeholder: "e.g. Jane Smith"
+    validations:
+      required: true

@@ -1,0 +1,63 @@
+name: Submit a LinkedIn Post
+description: Share a LinkedIn post about Microsoft Fabric Data Agents.
+title: "[LinkedIn] "
+labels: ["content-submission", "linkedin"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for sharing a LinkedIn post with the community. Please fill out the fields below.
+
+  - type: input
+    id: title
+    attributes:
+      label: Post Title
+      description: A short descriptive title for the post.
+      placeholder: "e.g. My Experience Building Data Agents"
+    validations:
+      required: true
+
+  - type: input
+    id: linkedin_url
+    attributes:
+      label: LinkedIn Post URL
+      description: The full URL to the LinkedIn post.
+      placeholder: "https://www.linkedin.com/posts/..."
+    validations:
+      required: true
+
+  - type: input
+    id: author
+    attributes:
+      label: Post Author
+      description: Who wrote the LinkedIn post.
+      placeholder: "e.g. Jane Smith"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: A brief summary of what the post is about (2-3 sentences).
+      placeholder: "This post shares..."
+    validations:
+      required: true
+
+  - type: input
+    id: tags
+    attributes:
+      label: Tags
+      description: Comma-separated tags for discoverability.
+      placeholder: "data-agent, fabric, experience"
+    validations:
+      required: true
+
+  - type: input
+    id: contributor
+    attributes:
+      label: Your Name
+      description: Your name as you'd like it to appear on the site.
+      placeholder: "e.g. Jane Smith"
+    validations:
+      required: true

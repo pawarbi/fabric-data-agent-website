@@ -1,0 +1,70 @@
+name: Submit a Resource
+description: Share a documentation page, repository, tutorial, or other resource.
+title: "[Resource] "
+labels: ["content-submission", "resource"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for sharing a resource with the community. Please fill out the fields below.
+
+  - type: input
+    id: title
+    attributes:
+      label: Resource Title
+      description: A descriptive title for the resource.
+      placeholder: "e.g. Official Fabric Data Agent Documentation"
+    validations:
+      required: true
+
+  - type: input
+    id: url
+    attributes:
+      label: Resource URL
+      description: The full URL to the resource.
+      placeholder: "https://learn.microsoft.com/..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: A brief description of what this resource provides (2-3 sentences).
+      placeholder: "This resource provides..."
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      description: What type of resource is this?
+      options:
+        - documentation
+        - repository
+        - tutorial
+        - community
+        - reference
+        - sample-code
+        - other
+    validations:
+      required: true
+
+  - type: input
+    id: tags
+    attributes:
+      label: Tags
+      description: Comma-separated tags for discoverability.
+      placeholder: "data-agent, fabric, documentation"
+    validations:
+      required: true
+
+  - type: input
+    id: contributor
+    attributes:
+      label: Your Name
+      description: Your name as you'd like it to appear on the site.
+      placeholder: "e.g. Jane Smith"
+    validations:
+      required: true
