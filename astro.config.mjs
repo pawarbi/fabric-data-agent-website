@@ -5,7 +5,8 @@ import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://www.fabricdatagent.com',
+  site: 'https://pawarbi.github.io',
+  base: '/fabric-data-agent-website',
   output: 'static',
   integrations: [
     tailwind(),
