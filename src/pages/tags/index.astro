@@ -1,0 +1,57 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHeader from '../../components/PageHeader.astro';
+
+const [articles, resources, videos, events, tools, linkedin] = await Promise.all([
+  getCollection('articles'),
+  getCollection('resources'),
+  getCollection('videos'),
+  getCollection('events'),
+  getCollection('tools'),
+  getCollection('linkedin'),
+]);
+
+const allContent = [...articles, ...resources, ...videos, ...events, ...tools, ...linkedin];
+
+// Build tag -> count map
+const tagCounts = new Map<string, number>();
+allContent.forEach(item => {
+  item.data.tags.forEach((tag: string) => {
+    tagCounts.set(tag, (tagCounts.get(tag) || 0) + 1);
+  });
+});
+
+const sortedTags = [...tagCounts.entries()].sort((a, b) => b[1] - a[1]);
+const maxCount = sortedTags.length > 0 ? sortedTags[0][1] : 1;
+---
+
+<BaseLayout title="All Tags | Fabric Data Agent">
+  <PageHeader title="All Tags" description={`${sortedTags.length} tags across all content`} />
+
+  <section class="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
+    <div class="flex flex-wrap justify-center gap-3">
+      {sortedTags.map(([tag, count]) => {
+        const scale = Math.max(0.75, Math.min(1.5, 0.75 + (count / maxCount) * 0.75));
+        return (
+          <a
+            href={`/tags/${tag}/`}
+            class="inline-flex items-center gap-1.5 rounded-full border border-teal/20 bg-teal/10 px-4 py-2 font-medium text-teal-700 transition-all duration-200 hover:border-teal/40 hover:bg-teal/20 hover:shadow-[0_0_12px_rgba(0,212,170,0.2)] dark:text-teal"
+            style={`font-size: ${scale}rem;`}
+          >
+            {tag}
+            <span class="rounded-full bg-teal/20 px-2 py-0.5 text-xs text-teal-800 dark:text-teal">
+              {count}
+            </span>
+          </a>
+        );
+      })}
+    </div>
+
+    {sortedTags.length === 0 && (
+      <div class="mt-12 rounded-xl border border-dashed border-gray-200 p-12 text-center dark:border-indigo/20">
+        <p class="text-gray-500 dark:text-muted">No tags found.</p>
+      </div>
+    )}
+  </section>
+</BaseLayout>

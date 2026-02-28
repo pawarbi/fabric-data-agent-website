@@ -1,0 +1,30 @@
+---
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<div class="relative overflow-hidden px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
+  <!-- Decorative glow -->
+  <div class="pointer-events-none absolute left-1/2 top-0 -translate-x-1/2">
+    <div class="h-40 w-80 rounded-full bg-teal/5 blur-3xl"></div>
+  </div>
+
+  <div class="relative mx-auto max-w-3xl text-center">
+    <h1 data-pagefind-weight="5" class="bg-gradient-to-r from-teal via-gray-900 to-teal bg-clip-text text-4xl font-extrabold tracking-tight text-transparent dark:via-light sm:text-5xl">
+      {title}
+    </h1>
+    {description && (
+      <p class="mt-4 text-lg leading-relaxed text-gray-500 dark:text-muted">{description}</p>
+    )}
+    <!-- Decorative line -->
+    <div class="mx-auto mt-8 flex items-center justify-center gap-2">
+      <div class="h-px w-12 bg-gradient-to-r from-transparent to-teal/50"></div>
+      <div class="h-1.5 w-1.5 rounded-full bg-teal shadow-[0_0_6px_rgba(0,212,170,0.6)]"></div>
+      <div class="h-px w-12 bg-gradient-to-l from-transparent to-teal/50"></div>
+    </div>
+  </div>
+</div>

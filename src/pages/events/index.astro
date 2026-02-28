@@ -1,0 +1,135 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import ContentCard from '../../components/ContentCard.astro';
+import TagFilter from '../../components/TagFilter.astro';
+import JsonLd from '../../components/JsonLd.astro';
+import { getCollection } from 'astro:content';
+
+const allEvents = await getCollection('events');
+const today = new Date();
+today.setHours(0, 0, 0, 0);
+
+const upcoming = allEvents
+  .filter((e) => new Date(e.data.endDate ?? e.data.date) >= today)
+  .sort((a, b) => new Date(a.data.date).getTime() - new Date(b.data.date).getTime());
+
+const past = allEvents
+  .filter((e) => new Date(e.data.endDate ?? e.data.date) < today)
+  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
+
+const allTags = [...new Set(allEvents.flatMap((e) => e.data.tags))].sort();
+
+const typeBadgeColors: Record<string, string> = {
+  conference: 'bg-purple-500/20 text-purple-300',
+  session: 'bg-blue-500/20 text-blue-300',
+  meetup: 'bg-amber-500/20 text-amber-300',
+  webinar: 'bg-emerald-500/20 text-emerald-300',
+};
+
+function formatEventDate(date: Date, endDate?: Date): string {
+  const opts: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short', day: 'numeric' };
+  const start = date.toLocaleDateString('en-US', opts);
+  if (endDate) {
+    const end = endDate.toLocaleDateString('en-US', opts);
+    return `${start} – ${end}`;
+  }
+  return start;
+}
+---
+
+<BaseLayout title="Events | Fabric Data Agent" description="Upcoming conferences, sessions, and meetups related to Fabric Data Agents">
+  <JsonLd
+    type="CollectionPage"
+    title="Events"
+    description="Upcoming conferences, sessions, and meetups related to Fabric Data Agents"
+    url={Astro.url.toString()}
+  />
+
+  <PageHeader
+    title="Events"
+    description="Upcoming conferences, sessions, and meetups related to Fabric Data Agents"
+  />
+
+  <section class="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
+    <TagFilter tags={allTags} />
+
+    <!-- Upcoming Events -->
+    <h2 class="mb-6 mt-8 text-2xl font-bold text-gray-900 dark:text-light">📅 Upcoming Events</h2>
+    {upcoming.length > 0 ? (
+      <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {upcoming.map((event) => (
+          <div class="flex flex-col" data-tags={event.data.tags.join(',')}>
+            <ContentCard
+              title={event.data.title}
+              description={event.data.description}
+              url={event.data.url}
+              tags={event.data.tags}
+              contributor={event.data.contributor}
+              type="event"
+              date={event.data.date.toISOString()}
+            />
+            <div class="mt-[-1px] flex items-center gap-3 rounded-b-xl border border-t-0 border-gray-200 bg-white/60 dark:border-indigo/20 dark:bg-dark/40 px-5 py-3">
+              <span class={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize ${typeBadgeColors[event.data.type] || 'bg-indigo/20 text-muted'}`}>
+                {event.data.type}
+              </span>
+              <span class="flex items-center gap-1 text-xs text-gray-500 dark:text-muted">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                {event.data.location}
+              </span>
+              <span class="ml-auto text-xs font-medium text-teal">
+                {formatEventDate(new Date(event.data.date), event.data.endDate ? new Date(event.data.endDate) : undefined)}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+    ) : (
+      <div class="rounded-xl border border-gray-200 bg-white/60 dark:border-indigo/20 dark:bg-dark/40 py-12 text-center">
+        <p class="text-lg text-gray-500 dark:text-muted">No upcoming events at the moment.</p>
+        <p class="mt-2 text-sm text-gray-400 dark:text-muted/60">Check back soon or subscribe to get notified!</p>
+      </div>
+    )}
+
+    <!-- Past Events -->
+    <h2 class="mb-6 mt-16 text-2xl font-bold text-gray-900 dark:text-light">🕒 Past Events</h2>
+    {past.length > 0 ? (
+      <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {past.map((event) => (
+          <div class="flex flex-col opacity-75" data-tags={event.data.tags.join(',')}>
+            <ContentCard
+              title={event.data.title}
+              description={event.data.description}
+              url={event.data.url}
+              tags={event.data.tags}
+              contributor={event.data.contributor}
+              type="event"
+              date={event.data.date.toISOString()}
+            />
+            <div class="mt-[-1px] flex items-center gap-3 rounded-b-xl border border-t-0 border-gray-200 bg-white/60 dark:border-indigo/20 dark:bg-dark/40 px-5 py-3">
+              <span class={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize ${typeBadgeColors[event.data.type] || 'bg-indigo/20 text-muted'}`}>
+                {event.data.type}
+              </span>
+              <span class="flex items-center gap-1 text-xs text-gray-500 dark:text-muted">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                {event.data.location}
+              </span>
+              <span class="ml-auto text-xs font-medium text-gray-400 dark:text-muted/60">
+                {formatEventDate(new Date(event.data.date), event.data.endDate ? new Date(event.data.endDate) : undefined)}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+    ) : (
+      <div class="rounded-xl border border-gray-200 bg-white/60 dark:border-indigo/20 dark:bg-dark/40 py-12 text-center"><p class="text-lg text-gray-500 dark:text-muted">No past events yet.</p>
+      </div>
+    )}
+  </section>
+</BaseLayout>

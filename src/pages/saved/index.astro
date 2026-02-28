@@ -1,0 +1,67 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHeader from '../../components/PageHeader.astro';
+---
+
+<BaseLayout title="Saved | Fabric Data Agent">
+  <PageHeader title="Saved Items" description="Your bookmarked articles, resources, videos, events, and tools" />
+
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+    <div id="saved-items" class="space-y-4">
+      <p class="text-gray-500 dark:text-muted">Loading saved items...</p>
+    </div>
+    <div id="saved-empty" class="hidden text-center py-20">
+      <p class="text-lg text-gray-500 dark:text-muted">No saved items yet</p>
+      <p class="mt-2 text-sm text-gray-400 dark:text-muted/60">Click the bookmark icon on any content card to save it for later.</p>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  function renderSavedItems() {
+    const container = document.getElementById('saved-items');
+    const emptyState = document.getElementById('saved-empty');
+    if (!container || !emptyState) return;
+
+    const bookmarks = JSON.parse(localStorage.getItem('fda-bookmarks') || '[]');
+
+    if (bookmarks.length === 0) {
+      container.classList.add('hidden');
+      emptyState.classList.remove('hidden');
+      return;
+    }
+
+    emptyState.classList.add('hidden');
+    container.classList.remove('hidden');
+
+    const typeIcons: Record<string, string> = { article: '📄', resource: '📚', video: '🎬', event: '📅', tool: '🔧', linkedin: '💼' };
+
+    container.innerHTML = bookmarks.map((b: { id: string; type: string; url: string; title: string; savedAt: string }) => `
+      <div class="flex items-center justify-between rounded-xl border border-gray-200 dark:border-indigo/20 bg-white dark:bg-dark/60 p-4 transition-all hover:border-teal/30">
+        <div class="flex items-center gap-3">
+          <span class="text-lg">${typeIcons[b.type] || '📄'}</span>
+          <div>
+            <a href="${b.url}" target="_blank" rel="noopener noreferrer" class="font-medium text-gray-900 dark:text-light hover:text-teal transition-colors">${b.title}</a>
+            <p class="text-xs text-gray-400 dark:text-muted/60 mt-0.5">Saved ${new Date(b.savedAt).toLocaleDateString()}</p>
+          </div>
+        </div>
+        <button onclick="removeBookmark('${b.id}'); renderSavedItems();" class="text-gray-400 dark:text-muted hover:text-accent transition-colors p-1" aria-label="Remove bookmark">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+    `).join('');
+  }
+
+  function removeBookmark(id: string) {
+    const bookmarks = JSON.parse(localStorage.getItem('fda-bookmarks') || '[]');
+    const filtered = bookmarks.filter((b: { id: string }) => b.id !== id);
+    localStorage.setItem('fda-bookmarks', JSON.stringify(filtered));
+  }
+
+  (window as any).removeBookmark = removeBookmark;
+  (window as any).renderSavedItems = renderSavedItems;
+  document.addEventListener('DOMContentLoaded', renderSavedItems);
+  document.addEventListener('astro:after-swap', renderSavedItems);
+</script>

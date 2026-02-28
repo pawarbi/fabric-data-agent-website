@@ -1,0 +1,68 @@
+---
+interface Props {
+  tags: string[];
+}
+
+const { tags } = Astro.props;
+---
+
+<div class="tag-filter mb-8 flex gap-2 overflow-x-auto pb-2 scrollbar-thin">
+  <button
+    class="tag-btn active shrink-0 rounded-full border border-teal/30 bg-teal/10 px-4 py-1.5 text-sm font-medium text-teal transition-all duration-300 hover:bg-teal/20"
+    data-tag="all"
+  >
+    All
+  </button>
+  {tags.map((tag) => (
+    <button
+      class="tag-btn shrink-0 rounded-full border border-gray-200 bg-white px-4 py-1.5 text-sm font-medium text-gray-500 transition-all duration-300 hover:border-teal/30 hover:text-gray-900 dark:border-indigo/20 dark:bg-dark/60 dark:text-muted dark:hover:text-light"
+      data-tag={tag}
+    >
+      {tag}
+    </button>
+  ))}
+</div>
+
+<style>
+  .tag-filter::-webkit-scrollbar {
+    height: 4px;
+  }
+  .tag-filter::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .tag-filter::-webkit-scrollbar-thumb {
+    background: rgba(45, 43, 127, 0.3);
+    border-radius: 2px;
+  }
+  .tag-btn.active {
+    border-color: rgba(0, 212, 170, 0.5);
+    background-color: rgba(0, 212, 170, 0.15);
+    color: #00D4AA;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const buttons = document.querySelectorAll<HTMLButtonElement>('.tag-btn');
+    const cards = document.querySelectorAll<HTMLElement>('[data-tags]');
+
+    buttons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        // Update active button
+        buttons.forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        const selectedTag = btn.dataset.tag;
+
+        cards.forEach((card) => {
+          if (selectedTag === 'all') {
+            card.style.display = '';
+            return;
+          }
+          const cardTags = (card.dataset.tags || '').split(',').map((t) => t.trim());
+          card.style.display = cardTags.includes(selectedTag!) ? '' : 'none';
+        });
+      });
+    });
+  });
+</script>

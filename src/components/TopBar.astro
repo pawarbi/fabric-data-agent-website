@@ -1,0 +1,39 @@
+---
+import ThemeToggle from './ThemeToggle.astro';
+---
+
+<header
+  class="sticky top-0 z-30 flex h-[60px] items-center justify-between border-b border-gray-200 bg-white/80 px-4 backdrop-blur-xl dark:border-indigo/20 dark:bg-dark/70"
+  data-pagefind-ignore
+>
+  <!-- Left: Hamburger -->
+  <button
+    id="hamburger-btn"
+    class="rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-200 hover:text-gray-900 dark:text-muted dark:hover:bg-indigo/10 dark:hover:text-light lg:hidden"
+    aria-label="Open menu"
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+    </svg>
+  </button>
+
+  <!-- Center: Mobile title -->
+  <span class="text-sm font-semibold text-gray-900 dark:text-light lg:hidden">⚡ Fabric Data Agent</span>
+
+  <!-- Spacer on desktop -->
+  <div class="hidden lg:block"></div>
+
+  <!-- Right actions -->
+  <div class="flex items-center gap-2">
+    <a
+      href="/search/"
+      class="rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-200 hover:text-teal dark:text-muted dark:hover:bg-indigo/10"
+      aria-label="Search"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+      </svg>
+    </a>
+    <ThemeToggle />
+  </div>
+</header>

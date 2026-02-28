@@ -1,0 +1,51 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import ContentCard from '../../components/ContentCard.astro';
+import TagFilter from '../../components/TagFilter.astro';
+import JsonLd from '../../components/JsonLd.astro';
+
+const tools = await getCollection('tools');
+const allTags = [...new Set(tools.flatMap((t) => t.data.tags))].sort();
+---
+
+<BaseLayout title="Tools | Fabric Data Agent" description="Useful tools and utilities for working with Microsoft Fabric Data Agents">
+	<JsonLd
+		type="CollectionPage"
+		title="Tools | Fabric Data Agent"
+		description="Useful tools and utilities for working with Microsoft Fabric Data Agents"
+		url="/tools"
+	/>
+	<PageHeader
+		title="Tools"
+		description="Useful tools and utilities for working with Microsoft Fabric Data Agents"
+	/>
+	<section class="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
+		{allTags.length > 0 && <TagFilter tags={allTags} />}
+		{tools.length > 0 ? (
+			<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+				{tools.map((tool) => (
+					<div class="relative">
+						<span class="absolute right-3 top-3 z-10 rounded-full bg-gray-100 text-gray-500 dark:bg-muted/60 px-2 py-0.5 text-xs dark:text-muted backdrop-blur">
+							{tool.data.category}
+						</span>
+						<ContentCard
+							title={tool.data.title}
+							description={tool.data.description}
+							url={tool.data.url}
+							tags={tool.data.tags}
+							contributor={tool.data.contributor}
+							type="tool"
+						/>
+					</div>
+				))}
+			</div>
+		) : (
+			<div class="rounded-xl border border-dashed border-gray-200 dark:border-indigo/20 py-16 text-center">
+				<p class="text-lg text-gray-500 dark:text-muted">No tools available yet. Check back soon!</p>
+				<p class="mt-2 text-sm text-gray-400 dark:text-muted/60">Built something cool? <a href="/contribute/" class="text-teal underline decoration-teal/30 underline-offset-2 hover:text-tealDark">Contribute</a></p>
+			</div>
+		)}
+	</section>
+</BaseLayout>

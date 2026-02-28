@@ -1,0 +1,36 @@
+---
+const currentYear = new Date().getFullYear();
+---
+
+<footer class="relative border-t border-gray-200 bg-gray-50 dark:border-indigo/20 dark:bg-darker" data-pagefind-ignore>
+  <!-- Teal accent line -->
+  <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-teal/50 to-transparent"></div>
+
+  <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+    <div class="flex flex-col items-center justify-between gap-6 md:flex-row">
+      <!-- Brand -->
+      <div class="text-center md:text-left">
+        <a href="/" class="inline-flex items-center gap-2 text-lg font-bold text-gray-900 transition-colors hover:text-teal dark:text-light">
+          <span class="text-teal">⚡</span>
+          <span>Fabric Data Agent</span>
+        </a>
+        <p class="mt-1 text-sm text-gray-500 dark:text-muted">Built by the community</p>
+      </div>
+
+      <!-- Links -->
+      <div class="flex items-center gap-6 text-sm">
+        <a href="#" class="text-gray-500 transition-colors duration-300 hover:text-teal dark:text-muted">GitHub</a>
+        <a href="/contribute/" class="text-gray-500 transition-colors duration-300 hover:text-teal dark:text-muted">Contribute</a>
+        <a href="/about/" class="text-gray-500 transition-colors duration-300 hover:text-teal dark:text-muted">About</a>
+      </div>
+    </div>
+
+    <!-- Copyright & Disclaimer -->
+    <div class="mt-8 border-t border-gray-200 pt-6 text-center dark:border-indigo/10">
+      <p class="text-xs text-gray-400 dark:text-muted/60">&copy; {currentYear} Fabric Data Agent. All rights reserved.</p>
+      <p class="mt-2 max-w-2xl mx-auto text-[11px] leading-relaxed text-gray-400/70 dark:text-muted/40">
+        This website is not affiliated with, sponsored by, or endorsed by Microsoft Corporation. It is an independent, community-built open source project. All linked content remains the property of its original authors.
+      </p>
+    </div>
+  </div>
+</footer>

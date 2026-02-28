@@ -1,0 +1,141 @@
+---
+import Sidebar from '../components/Sidebar.astro';
+import TopBar from '../components/TopBar.astro';
+import Footer from '../components/Footer.astro';
+import FlyoutPanel from '../components/FlyoutPanel.astro';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = 'Your intelligent data exploration companion – articles, tools, and resources for Microsoft Fabric Data Agent.' } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en" class="dark" style="color-scheme: dark;">
+  <head>
+    <meta charset="utf-8" />
+    <script is:inline>
+      (function() {
+        var theme = 'dark';
+        try {
+          var saved = localStorage.getItem('theme');
+          if (saved === 'light' || saved === 'dark') theme = saved;
+        } catch(e) {}
+        var el = document.documentElement;
+        if (theme === 'dark') {
+          el.classList.add('dark');
+          el.style.colorScheme = 'dark';
+        } else {
+          el.classList.remove('dark');
+          el.style.colorScheme = 'light';
+        }
+      })();
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <title>{title}</title>
+  </head>
+  <body class="min-h-screen bg-gray-50 font-sans text-gray-900 antialiased dark:bg-darker dark:text-light">
+    <!-- Dot grid background pattern -->
+    <div class="dot-pattern fixed inset-0 -z-10"></div>
+
+    <Sidebar />
+
+    <div id="main-wrapper" class="min-h-screen transition-[margin] duration-300 lg:ml-[260px]">
+      <TopBar />
+
+      <main aria-label="Main content" data-pagefind-body>
+        <slot />
+      </main>
+
+      <Footer />
+    </div>
+
+    <FlyoutPanel />
+
+    <script is:inline>
+      // Bookmark functions
+      function getBookmarks() {
+        try {
+          return JSON.parse(localStorage.getItem('fda-bookmarks') || '[]');
+        } catch { return []; }
+      }
+
+      function saveBookmarks(bookmarks) {
+        localStorage.setItem('fda-bookmarks', JSON.stringify(bookmarks));
+      }
+
+      function isBookmarked(id) {
+        return getBookmarks().some(function(b) { return b.id === id; });
+      }
+
+      function toggleBookmark(btn) {
+        var id = btn.dataset.bookmarkId;
+        var bookmarks = getBookmarks();
+        var existing = bookmarks.findIndex(function(b) { return b.id === id; });
+
+        if (existing >= 0) {
+          bookmarks.splice(existing, 1);
+        } else {
+          bookmarks.push({
+            id: id,
+            title: btn.dataset.bookmarkTitle,
+            url: btn.dataset.bookmarkUrl,
+            type: btn.dataset.bookmarkType,
+            savedAt: new Date().toISOString(),
+          });
+        }
+
+        saveBookmarks(bookmarks);
+        updateBookmarkUI(btn, existing < 0);
+      }
+
+      function updateBookmarkUI(btn, isActive) {
+        var outline = btn.querySelector('.bookmark-icon-outline');
+        var filled = btn.querySelector('.bookmark-icon-filled');
+        if (isActive) {
+          outline.classList.add('hidden');
+          filled.classList.remove('hidden');
+          btn.classList.add('text-accent');
+          btn.classList.remove('text-gray-300', 'dark:text-muted/40');
+        } else {
+          outline.classList.remove('hidden');
+          filled.classList.add('hidden');
+          btn.classList.remove('text-accent');
+          btn.classList.add('text-gray-300', 'dark:text-muted/40');
+        }
+      }
+
+      function initBookmarks() {
+        document.querySelectorAll('.bookmark-btn').forEach(function(btn) {
+          var id = btn.dataset.bookmarkId;
+          updateBookmarkUI(btn, isBookmarked(id));
+        });
+      }
+
+      window.toggleBookmark = toggleBookmark;
+
+      document.addEventListener('DOMContentLoaded', initBookmarks);
+      document.addEventListener('astro:after-swap', initBookmarks);
+    </script>
+
+    <style is:global>
+      .dot-pattern {
+        background-image: radial-gradient(circle, rgba(45, 43, 127, 0.08) 1px, transparent 1px);
+        background-size: 24px 24px;
+      }
+      .dark .dot-pattern {
+        background-image: radial-gradient(circle, rgba(45, 43, 127, 0.3) 1px, transparent 1px);
+      }
+    </style>
+  </body>
+</html>

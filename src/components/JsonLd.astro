@@ -1,0 +1,79 @@
+---
+interface Props {
+  type: 'WebSite' | 'Article' | 'Event' | 'CollectionPage';
+  title: string;
+  description: string;
+  url: string;
+  datePublished?: string;
+  dateModified?: string;
+  author?: string;
+  startDate?: string;
+  location?: string;
+}
+
+const { type, title, description, url, datePublished, dateModified, author, startDate, location } = Astro.props;
+
+function buildJsonLd() {
+  const base: Record<string, unknown> = {
+    '@context': 'https://schema.org',
+    '@type': type,
+  };
+
+  switch (type) {
+    case 'WebSite':
+      return {
+        ...base,
+        name: title,
+        description,
+        url,
+        potentialAction: {
+          '@type': 'SearchAction',
+          target: `${url}search/?q={search_term_string}`,
+          'query-input': 'required name=search_term_string',
+        },
+      };
+    case 'Article':
+      return {
+        ...base,
+        headline: title,
+        description,
+        url,
+        ...(datePublished && { datePublished }),
+        ...(dateModified && { dateModified }),
+        ...(author && {
+          author: {
+            '@type': 'Person',
+            name: author,
+          },
+        }),
+      };
+    case 'Event':
+      return {
+        ...base,
+        name: title,
+        description,
+        url,
+        ...(startDate && { startDate }),
+        ...(location && {
+          location: {
+            '@type': 'Place',
+            name: location,
+          },
+        }),
+      };
+    case 'CollectionPage':
+      return {
+        ...base,
+        name: title,
+        description,
+        url,
+      };
+    default:
+      return base;
+  }
+}
+
+const jsonLd = JSON.stringify(buildJsonLd());
+---
+
+<script type="application/ld+json" set:html={jsonLd} />

@@ -1,0 +1,228 @@
+---
+---
+
+<!-- Backdrop -->
+<div id="flyout-backdrop" class="fixed inset-0 z-[60] bg-black/50 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300" aria-hidden="true"></div>
+
+<!-- Panel -->
+<aside id="flyout-panel" class="fixed top-0 right-0 z-[70] h-screen w-full sm:w-[500px] lg:w-[550px] translate-x-full transition-transform duration-300 ease-out overflow-y-auto
+  bg-white dark:bg-dark border-l border-gray-200 dark:border-indigo/20 shadow-2xl"
+  role="dialog" aria-modal="true" aria-label="Content preview">
+
+  <!-- Close button -->
+  <div class="sticky top-0 z-10 flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-indigo/20 bg-white/90 dark:bg-dark/90 backdrop-blur-sm">
+    <span id="flyout-type-badge" class="inline-flex items-center gap-1 rounded-md bg-gray-100 dark:bg-indigo/20 px-2.5 py-1 text-xs font-medium capitalize text-gray-500 dark:text-muted"></span>
+    <button id="flyout-close" class="rounded-lg p-2 text-gray-400 dark:text-muted hover:text-gray-900 dark:hover:text-light hover:bg-gray-100 dark:hover:bg-indigo/10 transition-colors" aria-label="Close preview">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+  </div>
+
+  <!-- Content -->
+  <div class="px-6 py-6 space-y-6">
+    <!-- Title -->
+    <h2 id="flyout-title" class="text-2xl font-bold text-gray-900 dark:text-light leading-tight"></h2>
+
+    <!-- Source domain -->
+    <div id="flyout-source" class="flex items-center gap-2 text-sm text-gray-400 dark:text-muted/70">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+      </svg>
+      <span id="flyout-domain"></span>
+    </div>
+
+    <!-- Date -->
+    <p id="flyout-date" class="text-sm text-gray-400 dark:text-muted/60"></p>
+
+    <!-- Video embed container (only shown for videos) -->
+    <div id="flyout-video-container" class="hidden">
+      <div class="aspect-video w-full rounded-lg overflow-hidden border border-gray-200 dark:border-indigo/20">
+        <iframe id="flyout-video-iframe" class="w-full h-full" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+    </div>
+
+    <!-- LinkedIn embed container (only shown for linkedin posts) -->
+    <div id="flyout-linkedin-container" class="hidden">
+      <iframe id="flyout-linkedin-iframe" height="400" width="100%" frameborder="0" allowfullscreen loading="lazy" class="border-0 rounded-lg"></iframe>
+    </div>
+
+    <!-- Full description (NO truncation) -->
+    <div>
+      <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-muted/70 mb-2">Description</h3>
+      <p id="flyout-description" class="text-sm leading-relaxed text-gray-600 dark:text-muted"></p>
+    </div>
+
+    <!-- Tags -->
+    <div id="flyout-tags-container">
+      <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-muted/70 mb-2">Tags</h3>
+      <div id="flyout-tags" class="flex flex-wrap gap-2"></div>
+    </div>
+
+    <!-- Contributor & submission info -->
+    <div class="flex items-center gap-4 text-sm text-gray-400 dark:text-muted/60 border-t border-gray-200 dark:border-indigo/10 pt-4">
+      <div id="flyout-contributor" class="flex items-center gap-1.5">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+        </svg>
+        <span id="flyout-contributor-name"></span>
+      </div>
+    </div>
+
+    <!-- Primary CTA -->
+    <a id="flyout-cta" href="#" target="_blank" rel="noopener noreferrer"
+      class="flex items-center justify-center gap-2 w-full rounded-lg bg-teal px-6 py-3.5 text-sm font-semibold text-darker transition-all duration-300 hover:bg-tealDark hover:shadow-[0_0_24px_rgba(0,212,170,0.3)]">
+      <span id="flyout-cta-text">Open Article</span>
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+      </svg>
+    </a>
+  </div>
+</aside>
+
+<script>
+function initFlyout() {
+  const backdrop = document.getElementById('flyout-backdrop');
+  const panel = document.getElementById('flyout-panel');
+  const closeBtn = document.getElementById('flyout-close');
+
+  if (!backdrop || !panel) return;
+
+  function openFlyout(data: Record<string, string>) {
+    const typeIcons: Record<string, string> = { article: '📄', resource: '📚', video: '🎬', event: '📅', tool: '🔧', linkedin: '💼' };
+    const ctaText: Record<string, string> = { article: 'Read Article', resource: 'Open Resource', video: 'Watch on YouTube', event: 'View Event', tool: 'Open Tool', linkedin: 'View on LinkedIn' };
+
+    document.getElementById('flyout-type-badge')!.textContent = `${typeIcons[data.type] || '📄'} ${data.type}`;
+    document.getElementById('flyout-title')!.textContent = data.title;
+    document.getElementById('flyout-description')!.textContent = data.description || '';
+
+    // Source domain
+    const domainEl = document.getElementById('flyout-domain')!;
+    const sourceEl = document.getElementById('flyout-source')!;
+    try {
+      domainEl.textContent = new URL(data.url).hostname.replace('www.', '');
+      sourceEl.classList.remove('hidden');
+    } catch { sourceEl.classList.add('hidden'); }
+
+    // Date
+    const dateEl = document.getElementById('flyout-date')!;
+    dateEl.textContent = data.date || '';
+    dateEl.classList.toggle('hidden', !data.date);
+
+    // Video embed
+    const videoContainer = document.getElementById('flyout-video-container')!;
+    const videoIframe = document.getElementById('flyout-video-iframe') as HTMLIFrameElement;
+    if (data.youtubeId) {
+      videoIframe.src = `https://www.youtube.com/embed/${data.youtubeId}`;
+      videoContainer.classList.remove('hidden');
+    } else {
+      videoIframe.src = '';
+      videoContainer.classList.add('hidden');
+    }
+
+    // LinkedIn embed
+    const linkedinContainer = document.getElementById('flyout-linkedin-container')!;
+    const linkedinIframe = document.getElementById('flyout-linkedin-iframe') as HTMLIFrameElement;
+    if (data.linkedinActivityId) {
+      linkedinIframe.src = `https://www.linkedin.com/embed/feed/update/urn:li:activity:${data.linkedinActivityId}`;
+      linkedinContainer.classList.remove('hidden');
+    } else {
+      linkedinIframe.src = '';
+      linkedinContainer.classList.add('hidden');
+    }
+
+    // Tags
+    const tagsContainer = document.getElementById('flyout-tags-container')!;
+    const tagsEl = document.getElementById('flyout-tags')!;
+    const tags = data.tags ? data.tags.split(',').filter(Boolean) : [];
+    if (tags.length > 0) {
+      tagsEl.innerHTML = tags.map(tag =>
+        `<a href="/tags/${encodeURIComponent(tag.trim())}/" class="rounded-full bg-teal/10 px-3 py-1 text-xs font-medium text-teal-700 dark:text-teal hover:bg-teal/20 transition-colors">${tag.trim()}</a>`
+      ).join('');
+      tagsContainer.classList.remove('hidden');
+    } else {
+      tagsContainer.classList.add('hidden');
+    }
+
+    // Contributor
+    document.getElementById('flyout-contributor-name')!.textContent = data.contributor || '';
+    document.getElementById('flyout-contributor')!.classList.toggle('hidden', !data.contributor);
+
+    // CTA
+    const cta = document.getElementById('flyout-cta') as HTMLAnchorElement;
+    cta.href = data.url || '#';
+    document.getElementById('flyout-cta-text')!.textContent = ctaText[data.type] || 'Open Link';
+
+    // Show panel
+    panel.classList.remove('translate-x-full');
+    panel.classList.add('translate-x-0');
+    backdrop.classList.remove('opacity-0', 'pointer-events-none');
+    backdrop.classList.add('opacity-100', 'pointer-events-auto');
+    document.body.style.overflow = 'hidden';
+
+    // Focus trap
+    closeBtn?.focus();
+  }
+
+  function closeFlyout() {
+    panel.classList.add('translate-x-full');
+    panel.classList.remove('translate-x-0');
+    backdrop.classList.add('opacity-0', 'pointer-events-none');
+    backdrop.classList.remove('opacity-100', 'pointer-events-auto');
+    document.body.style.overflow = '';
+
+    // Clear video/linkedin to stop playback
+    const videoIframe = document.getElementById('flyout-video-iframe') as HTMLIFrameElement;
+    if (videoIframe) videoIframe.src = '';
+    const linkedinIframe = document.getElementById('flyout-linkedin-iframe') as HTMLIFrameElement;
+    if (linkedinIframe) linkedinIframe.src = '';
+  }
+
+  // Close handlers
+  closeBtn?.addEventListener('click', closeFlyout);
+  backdrop?.addEventListener('click', closeFlyout);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !panel.classList.contains('translate-x-full')) closeFlyout();
+  });
+
+  // Listen for custom flyout events (from knowledge graph, etc.)
+  document.addEventListener('open-flyout', (e: Event) => {
+    const detail = (e as CustomEvent).detail;
+    openFlyout({
+      title: detail.title || '',
+      description: detail.description || '',
+      url: detail.url || '',
+      type: detail.type || 'article',
+      date: detail.date || '',
+      tags: detail.tags || '',
+      contributor: detail.contributor || '',
+      youtubeId: detail.youtubeId || '',
+      linkedinActivityId: detail.linkedinActivityId || '',
+    });
+  });
+
+  // Listen for card clicks
+  document.addEventListener('click', (e) => {
+    const card = (e.target as HTMLElement).closest('[data-flyout]');
+    if (card) {
+      e.preventDefault();
+      e.stopPropagation();
+      const el = card as HTMLElement;
+      openFlyout({
+        title: el.dataset.flyoutTitle || '',
+        description: el.dataset.flyoutDescription || '',
+        url: el.dataset.flyoutUrl || '',
+        type: el.dataset.flyoutType || 'article',
+        date: el.dataset.flyoutDate || '',
+        tags: el.dataset.tags || '',
+        contributor: el.dataset.flyoutContributor || '',
+        youtubeId: el.dataset.flyoutYoutubeid || '',
+        linkedinActivityId: el.dataset.flyoutLinkedinactivityid || '',
+      });
+    }
+  });
+}
+
+initFlyout();
+document.addEventListener('astro:after-swap', initFlyout);
+</script>

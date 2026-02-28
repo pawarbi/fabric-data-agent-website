@@ -1,0 +1,94 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import TagFilter from '../../components/TagFilter.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import JsonLd from '../../components/JsonLd.astro';
+
+const allVideos = await getCollection('videos');
+const videos = allVideos.sort(
+  (a, b) => new Date(b.data.publishDate).getTime() - new Date(a.data.publishDate).getTime()
+);
+
+const allTags = [...new Set(videos.flatMap((v) => v.data.tags))].sort();
+---
+
+<BaseLayout title="Videos | Fabric Data Agent">
+  <JsonLd
+    type="CollectionPage"
+    title="Videos | Fabric Data Agent"
+    description="Watch talks, demos, and tutorials about Microsoft Fabric Data Agents"
+    url="/videos"
+  />
+
+  <PageHeader
+    title="Videos"
+    description="Watch talks, demos, and tutorials about Microsoft Fabric Data Agents"
+  />
+
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+    {allTags.length > 0 && <TagFilter tags={allTags} />}
+
+    {videos.length === 0 ? (
+      <div class="text-center py-20">
+        <p class="text-gray-500 dark:text-muted text-lg">No videos available yet. Check back soon!</p>
+        <p class="mt-2 text-sm text-gray-400 dark:text-muted/60">Have a video to share? <a href="/contribute/" class="text-teal underline decoration-teal/30 underline-offset-2 hover:text-tealDark">Contribute</a></p>
+      </div>
+    ) : (
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
+        {videos.map((video) => (
+          <div
+            class="group rounded-2xl border border-gray-200 bg-white/60 dark:border-indigo/20 dark:bg-dark/50 backdrop-blur-sm overflow-hidden transition-all duration-300 hover:border-teal/40 hover:shadow-[0_0_20px_rgba(0,212,170,0.15)] hover:scale-[1.01]"
+            data-tags={video.data.tags.join(',')}
+          >
+            <div class="aspect-video w-full">
+              <iframe
+                src={`https://www.youtube.com/embed/${video.data.youtubeId}`}
+                title={video.data.title}
+                class="w-full h-full"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen
+              />
+            </div>
+
+            <div
+              class="p-6 space-y-3 cursor-pointer"
+              data-flyout
+              data-flyout-title={video.data.title}
+              data-flyout-description={video.data.description}
+              data-flyout-url={`https://www.youtube.com/watch?v=${video.data.youtubeId}`}
+              data-flyout-type="video"
+              data-flyout-date={new Date(video.data.publishDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+              data-flyout-contributor={video.data.contributor}
+              data-flyout-youtubeid={video.data.youtubeId}
+              data-tags={video.data.tags.join(',')}
+            >
+              <h3 class="text-xl font-semibold text-gray-900 dark:text-light group-hover:text-teal transition-colors">
+                {video.data.title}
+              </h3>
+
+              <p class="text-sm text-teal font-medium">{video.data.speaker}</p>
+
+              <p class="text-gray-500 dark:text-muted text-sm leading-relaxed">{video.data.description}</p>
+
+              {video.data.tags.length > 0 && (
+                <div class="flex flex-wrap gap-2 pt-1">
+                  {video.data.tags.map((tag: string) => (
+                    <span class="px-2.5 py-0.5 text-xs rounded-full bg-teal/10 font-medium text-teal">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
+
+              <p class="text-xs text-gray-400 dark:text-muted/60 pt-2">
+                Contributed by {video.data.contributor}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+    )}
+  </section>
+</BaseLayout>

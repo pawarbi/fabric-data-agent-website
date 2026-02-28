@@ -1,0 +1,25 @@
+# Fabric Data Agent
+
+> A community-driven resource hub for Microsoft Fabric Data Agents. Find curated articles, resources, videos, events, and tools related to building and using data agents in Microsoft Fabric.
+
+## About
+This website is a community resource for Microsoft Fabric Data Agent practitioners. It aggregates curated content including articles, learning resources, YouTube videos, upcoming events, and useful tools.
+
+## Content Categories
+- Articles: Curated articles about Fabric Data Agents with summaries
+- Resources: Links to documentation, tutorials, and learning materials
+- Videos: YouTube videos about Fabric Data Agents
+- Events: Upcoming conferences, sessions, and meetups
+- Tools: Useful tools for working with Fabric Data Agents
+
+## URLs
+- Articles: https://www.fabricdatagent.com/articles/
+- Resources: https://www.fabricdatagent.com/resources/
+- Videos: https://www.fabricdatagent.com/videos/
+- Events: https://www.fabricdatagent.com/events/
+- Tools: https://www.fabricdatagent.com/tools/
+- About: https://www.fabricdatagent.com/about/
+- Contribute: https://www.fabricdatagent.com/contribute/
+
+## Contributing
+This site is GitHub-backed. Community members can contribute by submitting pull requests with new content in Markdown format.

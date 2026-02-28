@@ -1,0 +1,95 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import JsonLd from '../../components/JsonLd.astro';
+import { getCollection } from 'astro:content';
+
+const paths = await getCollection('learn');
+
+const difficultyOrder = { beginner: 0, intermediate: 1, advanced: 2 };
+paths.sort((a, b) => difficultyOrder[a.data.difficulty] - difficultyOrder[b.data.difficulty]);
+
+const difficultyStyles: Record<string, { bg: string; text: string; label: string }> = {
+  beginner: { bg: 'bg-teal/15', text: 'text-teal', label: '🌱 Beginner' },
+  intermediate: { bg: 'bg-amber-500/15', text: 'text-amber-400', label: '⚡ Intermediate' },
+  advanced: { bg: 'bg-accent/15', text: 'text-accent', label: '🔥 Advanced' },
+};
+---
+
+<BaseLayout title="Learning Paths | Fabric Data Agent" description="Structured learning paths to master Fabric Data Agents — from beginner to advanced">
+  <JsonLd
+    type="CollectionPage"
+    title="Learning Paths"
+    description="Structured learning paths to master Fabric Data Agents — from beginner to advanced"
+    url={Astro.url.toString()}
+  />
+
+  <PageHeader
+    title="Learning Paths"
+    description="Structured learning paths to master Fabric Data Agents — from beginner to advanced"
+  />
+
+  <section class="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
+    {paths.length > 0 ? (
+      <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
+        {paths.map((path) => {
+          const style = difficultyStyles[path.data.difficulty];
+          return (
+            <a
+              href={`/learn/${path.id}/`}
+              class="group relative flex flex-col rounded-xl border border-gray-200 bg-white/60 dark:border-indigo/20 dark:bg-dark/60 p-6 backdrop-blur-sm transition-all duration-300 hover:border-teal/30 hover:shadow-[0_0_30px_rgba(0,212,170,0.15)] hover:scale-[1.02]"
+            >
+              {/* Difficulty badge */}
+              <div class="mb-4 flex items-center gap-3">
+                <span class={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${style.bg} ${style.text}`}>
+                  {style.label}
+                </span>
+                {path.data.estimatedTime && (
+                  <span class="inline-flex items-center gap-1 text-xs text-gray-500 dark:text-muted">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    {path.data.estimatedTime}
+                  </span>
+                )}
+              </div>
+
+              {/* Title */}
+              <h2 class="mb-2 text-xl font-bold text-gray-900 dark:text-light transition-colors duration-300 group-hover:text-teal">
+                {path.data.title}
+              </h2>
+
+              {/* Description */}
+              <p class="mb-4 flex-1 text-sm leading-relaxed text-gray-500 dark:text-muted">
+                {path.data.description}
+              </p>
+
+              {/* Steps count */}
+              <div class="mb-3 flex items-center gap-2 text-sm text-gray-500 dark:text-muted">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-teal" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                </svg>
+                <span>{path.data.items.length} steps</span>
+              </div>
+
+              {/* Tags */}
+              {path.data.tags.length > 0 && (
+                <div class="flex flex-wrap gap-1.5">
+                  {path.data.tags.map((tag) => (
+                    <span class="rounded-full bg-teal/10 px-2.5 py-0.5 text-xs font-medium text-teal">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </a>
+          );
+        })}
+      </div>
+    ) : (
+      <div class="rounded-xl border border-dashed border-gray-200 dark:border-indigo/20 py-16 text-center">
+        <p class="text-lg text-gray-500 dark:text-muted">No learning paths yet. Check back soon!</p>
+      </div>
+    )}
+  </section>
+</BaseLayout>

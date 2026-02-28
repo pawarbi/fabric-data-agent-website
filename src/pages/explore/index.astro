@@ -1,0 +1,316 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHeader from '../../components/PageHeader.astro';
+
+const [articles, resources, videos, events, tools, linkedin] = await Promise.all([
+  getCollection('articles'),
+  getCollection('resources'),
+  getCollection('videos'),
+  getCollection('events'),
+  getCollection('tools'),
+  getCollection('linkedin'),
+]);
+
+// Build nodes and edges
+const contentNodes: any[] = [];
+const tagSet = new Set<string>();
+
+function addItems(items: any[], type: string) {
+  items.forEach(item => {
+    const id = `${type}-${item.id}`;
+    contentNodes.push({
+      id,
+      title: item.data.title,
+      type,
+      tags: item.data.tags || [],
+      url: item.data.url || item.data.linkedinUrl || '',
+      description: item.data.description || item.data.summary || '',
+      contributor: item.data.contributor || '',
+      youtubeId: item.data.youtubeId || '',
+    });
+    (item.data.tags || []).forEach((t: string) => tagSet.add(t));
+  });
+}
+
+addItems(articles, 'article');
+addItems(resources, 'resource');
+addItems(videos, 'video');
+addItems(events, 'event');
+addItems(tools, 'tool');
+addItems(linkedin, 'linkedin');
+
+const tags = [...tagSet];
+
+// Build graph data
+const nodes = [
+  ...contentNodes.map(n => ({ ...n, group: 'content' })),
+  ...tags.map(t => ({ id: `tag-${t}`, title: t, type: 'tag', group: 'tag', tags: [], url: `/tags/${t}/`, description: '', contributor: '', youtubeId: '' })),
+];
+
+const links: { source: string; target: string }[] = [];
+contentNodes.forEach(node => {
+  node.tags.forEach((tag: string) => {
+    links.push({ source: node.id, target: `tag-${tag}` });
+  });
+});
+
+const graphData = JSON.stringify({ nodes, links });
+---
+
+<BaseLayout title="Explore | Fabric Data Agent">
+  <PageHeader
+    title="Explore"
+    description="Discover content connections through an interactive knowledge graph"
+  />
+
+  <section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-16">
+    <!-- Legend -->
+    <div class="mb-6 flex flex-wrap items-center gap-4 text-sm">
+      <span class="flex items-center gap-1.5"><span class="h-3 w-3 rounded-full bg-[#00D4AA]"></span> <span class="text-gray-500 dark:text-muted">Article</span></span>
+      <span class="flex items-center gap-1.5"><span class="h-3 w-3 rounded-full bg-[#8B5CF6]"></span> <span class="text-gray-500 dark:text-muted">Video</span></span>
+      <span class="flex items-center gap-1.5"><span class="h-3 w-3 rounded-full bg-[#F59E0B]"></span> <span class="text-gray-500 dark:text-muted">Resource</span></span>
+      <span class="flex items-center gap-1.5"><span class="h-3 w-3 rounded-full bg-[#EF4444]"></span> <span class="text-gray-500 dark:text-muted">Event</span></span>
+      <span class="flex items-center gap-1.5"><span class="h-3 w-3 rounded-full bg-[#3B82F6]"></span> <span class="text-gray-500 dark:text-muted">Tool</span></span>
+      <span class="flex items-center gap-1.5"><span class="h-3 w-3 rounded-full bg-[#EC4899]"></span> <span class="text-gray-500 dark:text-muted">LinkedIn</span></span>
+      <span class="flex items-center gap-1.5"><span class="h-3 w-3 rounded-full bg-[#6B7280] opacity-60"></span> <span class="text-gray-500 dark:text-muted">Tag</span></span>
+    </div>
+
+    <!-- Graph container -->
+    <div id="graph-container" class="relative w-full rounded-xl border border-gray-200 dark:border-indigo/20 bg-white dark:bg-dark/40 overflow-hidden" style="height: 600px;">
+      <svg id="graph-svg" class="w-full h-full"></svg>
+    </div>
+
+    <!-- Tooltip -->
+    <div id="graph-tooltip" class="fixed z-50 hidden rounded-lg border border-gray-200 dark:border-indigo/20 bg-white dark:bg-dark px-3 py-2 text-sm shadow-lg pointer-events-none">
+      <p id="tooltip-title" class="font-semibold text-gray-900 dark:text-light"></p>
+      <p id="tooltip-type" class="text-xs text-gray-400 dark:text-muted capitalize"></p>
+    </div>
+
+    <p class="mt-4 text-center text-xs text-gray-400 dark:text-muted/60">
+      Click a content node to preview · Drag to rearrange · Scroll to zoom
+    </p>
+  </section>
+</BaseLayout>
+
+<!-- Pass graph data to client -->
+<script id="graph-data" type="application/json" set:html={graphData}></script>
+
+<!-- D3.js -->
+<script is:inline src="https://d3js.org/d3.v7.min.js"></script>
+
+<script is:inline>
+(function() {
+  function initGraph() {
+    var dataEl = document.getElementById('graph-data');
+    if (!dataEl) return;
+
+    var data = JSON.parse(dataEl.textContent);
+    var container = document.getElementById('graph-container');
+    var svg = d3.select('#graph-svg');
+    var tooltip = document.getElementById('graph-tooltip');
+    var tooltipTitle = document.getElementById('tooltip-title');
+    var tooltipType = document.getElementById('tooltip-type');
+
+    // Clear previous
+    svg.selectAll('*').remove();
+
+    var width = container.clientWidth;
+    var height = container.clientHeight;
+
+    svg.attr('viewBox', [0, 0, width, height]);
+
+    // Color map
+    var colors = {
+      article: '#00D4AA',
+      video: '#8B5CF6',
+      resource: '#F59E0B',
+      event: '#EF4444',
+      tool: '#3B82F6',
+      linkedin: '#EC4899',
+      tag: '#6B7280',
+    };
+
+    // Node sizes
+    function nodeRadius(d) {
+      if (d.group === 'tag') {
+        var count = data.links.filter(function(l) {
+          return (l.source.id || l.source) === d.id || (l.target.id || l.target) === d.id;
+        }).length;
+        return Math.max(6, Math.min(16, count * 3));
+      }
+      return 10;
+    }
+
+    // Create simulation
+    var simulation = d3.forceSimulation(data.nodes)
+      .force('link', d3.forceLink(data.links).id(function(d) { return d.id; }).distance(80))
+      .force('charge', d3.forceManyBody().strength(-200))
+      .force('center', d3.forceCenter(width / 2, height / 2))
+      .force('collision', d3.forceCollide().radius(function(d) { return nodeRadius(d) + 5; }));
+
+    // Zoom behavior
+    var g = svg.append('g');
+
+    var zoom = d3.zoom()
+      .scaleExtent([0.3, 4])
+      .on('zoom', function(event) {
+        g.attr('transform', event.transform);
+      });
+
+    svg.call(zoom);
+
+    // Draw links
+    var link = g.append('g')
+      .selectAll('line')
+      .data(data.links)
+      .join('line')
+      .attr('stroke', function() {
+        return document.documentElement.classList.contains('dark') ? 'rgba(45, 43, 127, 0.3)' : 'rgba(200, 200, 220, 0.5)';
+      })
+      .attr('stroke-width', 1);
+
+    // Draw nodes
+    var node = g.append('g')
+      .selectAll('g')
+      .data(data.nodes)
+      .join('g')
+      .style('cursor', function(d) { return d.group === 'content' ? 'pointer' : 'default'; })
+      .call(d3.drag()
+        .on('start', dragstarted)
+        .on('drag', dragged)
+        .on('end', dragended));
+
+    // Node circles
+    node.append('circle')
+      .attr('r', nodeRadius)
+      .attr('fill', function(d) { return colors[d.type] || '#6B7280'; })
+      .attr('opacity', function(d) { return d.group === 'tag' ? 0.5 : 0.9; })
+      .attr('stroke', function(d) { return d.group === 'content' ? colors[d.type] : 'none'; })
+      .attr('stroke-width', 2)
+      .attr('stroke-opacity', 0.3);
+
+    // Node labels
+    node.append('text')
+      .text(function(d) {
+        if (d.group === 'tag') return '#' + d.title;
+        return d.title.length > 20 ? d.title.substring(0, 18) + '…' : d.title;
+      })
+      .attr('x', function(d) { return nodeRadius(d) + 4; })
+      .attr('y', 4)
+      .attr('font-size', function(d) { return d.group === 'tag' ? '9px' : '10px'; })
+      .attr('fill', function() {
+        return document.documentElement.classList.contains('dark') ? '#9494B8' : '#6B7280';
+      })
+      .attr('font-family', 'Inter, sans-serif')
+      .attr('pointer-events', 'none');
+
+    // Hover effects
+    node.on('mouseover', function(event, d) {
+      d3.select(this).select('circle')
+        .transition().duration(200)
+        .attr('opacity', 1)
+        .attr('stroke-width', 4)
+        .attr('stroke-opacity', 0.6);
+
+      link.attr('stroke', function(l) {
+        if ((l.source.id || l.source) === d.id || (l.target.id || l.target) === d.id) {
+          return colors[d.type] || '#00D4AA';
+        }
+        return document.documentElement.classList.contains('dark') ? 'rgba(45, 43, 127, 0.15)' : 'rgba(200, 200, 220, 0.3)';
+      }).attr('stroke-width', function(l) {
+        return ((l.source.id || l.source) === d.id || (l.target.id || l.target) === d.id) ? 2 : 1;
+      });
+
+      tooltipTitle.textContent = d.title;
+      tooltipType.textContent = d.group === 'tag' ? 'tag' : d.type;
+      tooltip.style.left = (event.pageX + 10) + 'px';
+      tooltip.style.top = (event.pageY - 10) + 'px';
+      tooltip.classList.remove('hidden');
+    })
+    .on('mousemove', function(event) {
+      tooltip.style.left = (event.pageX + 10) + 'px';
+      tooltip.style.top = (event.pageY - 10) + 'px';
+    })
+    .on('mouseout', function() {
+      d3.select(this).select('circle')
+        .transition().duration(200)
+        .attr('opacity', function(d) { return d.group === 'tag' ? 0.5 : 0.9; })
+        .attr('stroke-width', 2)
+        .attr('stroke-opacity', 0.3);
+
+      link.attr('stroke', function() {
+        return document.documentElement.classList.contains('dark') ? 'rgba(45, 43, 127, 0.3)' : 'rgba(200, 200, 220, 0.5)';
+      }).attr('stroke-width', 1);
+
+      tooltip.classList.add('hidden');
+    });
+
+    // Click handler
+    node.on('click', function(event, d) {
+      if (d.group === 'tag') {
+        window.location.href = d.url;
+        return;
+      }
+
+      var flyoutEvent = new CustomEvent('open-flyout', {
+        detail: {
+          title: d.title,
+          description: d.description,
+          url: d.url,
+          type: d.type,
+          tags: d.tags.join(','),
+          contributor: d.contributor,
+          youtubeId: d.youtubeId || '',
+        }
+      });
+      document.dispatchEvent(flyoutEvent);
+    });
+
+    // Simulation tick
+    simulation.on('tick', function() {
+      link
+        .attr('x1', function(d) { return d.source.x; })
+        .attr('y1', function(d) { return d.source.y; })
+        .attr('x2', function(d) { return d.target.x; })
+        .attr('y2', function(d) { return d.target.y; });
+
+      node.attr('transform', function(d) { return 'translate(' + d.x + ',' + d.y + ')'; });
+    });
+
+    // Drag functions
+    function dragstarted(event) {
+      if (!event.active) simulation.alphaTarget(0.3).restart();
+      event.subject.fx = event.subject.x;
+      event.subject.fy = event.subject.y;
+    }
+
+    function dragged(event) {
+      event.subject.fx = event.x;
+      event.subject.fy = event.y;
+    }
+
+    function dragended(event) {
+      if (!event.active) simulation.alphaTarget(0);
+      event.subject.fx = null;
+      event.subject.fy = null;
+    }
+
+    // Responsive resize
+    window.addEventListener('resize', function() {
+      var newWidth = container.clientWidth;
+      var newHeight = container.clientHeight;
+      svg.attr('viewBox', [0, 0, newWidth, newHeight]);
+      simulation.force('center', d3.forceCenter(newWidth / 2, newHeight / 2));
+      simulation.alpha(0.3).restart();
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initGraph);
+  } else {
+    initGraph();
+  }
+  document.addEventListener('astro:after-swap', initGraph);
+})();
+</script>

@@ -1,0 +1,62 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import ContentCard from '../../components/ContentCard.astro';
+import TagFilter from '../../components/TagFilter.astro';
+import JsonLd from '../../components/JsonLd.astro';
+import { getCollection } from 'astro:content';
+
+const articles = await getCollection('articles');
+
+articles.sort((a, b) => new Date(b.data.publishDate).getTime() - new Date(a.data.publishDate).getTime());
+
+const allTags = [...new Set(articles.flatMap((a) => a.data.tags))].sort();
+---
+
+<BaseLayout title="Articles | Fabric Data Agent" description="Curated articles about Microsoft Fabric Data Agents, handpicked by the community">
+  <JsonLd
+    type="CollectionPage"
+    title="Articles"
+    description="Curated articles about Microsoft Fabric Data Agents, handpicked by the community"
+    url={Astro.url.toString()}
+  />
+
+  <PageHeader
+    title="Articles"
+    description="Curated articles about Microsoft Fabric Data Agents, handpicked by the community"
+  />
+
+  <section class="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
+    <TagFilter tags={allTags} />
+
+    {articles.length > 0 ? (
+      <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {articles.map((article) => (
+          <ContentCard
+            title={article.data.title}
+            description={article.data.summary}
+            url={article.data.url}
+            tags={article.data.tags}
+            contributor={article.data.contributor}
+            type="article"
+            date={new Date(article.data.publishDate).toLocaleDateString()}
+          >
+            {(article.data.submittedDate || article.data.publishDate) && (
+              <div class="mt-2 space-y-0.5 text-xs text-gray-400 dark:text-muted/60">
+                <p>Published: {new Date(article.data.publishDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</p>
+                <p>Submitted: {new Date(article.data.submittedDate ?? article.data.publishDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</p>
+              </div>
+            )}
+          </ContentCard>
+        ))}
+      </div>
+    ) : (
+      <div class="rounded-xl border border-dashed border-gray-200 dark:border-indigo/20 py-16 text-center">
+        <p class="text-lg text-gray-500 dark:text-muted">No articles yet. Be the first to contribute!</p>
+        <a href="/contribute/" class="mt-4 inline-flex items-center gap-2 rounded-lg bg-teal px-5 py-2.5 text-sm font-semibold text-darker transition-all duration-300 hover:bg-tealDark hover:shadow-[0_0_20px_rgba(0,212,170,0.2)]">
+          Contribute an Article
+        </a>
+      </div>
+    )}
+  </section>
+</BaseLayout>

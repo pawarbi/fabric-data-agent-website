@@ -1,0 +1,129 @@
+---
+interface Props {
+  title: string;
+  description?: string;
+  url?: string;
+  tags?: string[];
+  contributor?: string;
+  type?: 'article' | 'resource' | 'video' | 'event' | 'tool';
+  date?: string;
+}
+
+const { title, description, url, tags = [], contributor, type = 'article', date } = Astro.props;
+
+const typeIcons: Record<string, string> = {
+  article: '📄',
+  resource: '📚',
+  video: '🎬',
+  event: '📅',
+  tool: '🔧',
+};
+
+const typeIcon = typeIcons[type] || '📄';
+const tagsAttr = tags.join(',');
+
+const formattedDate = date
+  ? new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+  : null;
+
+const domain = url ? (() => {
+  try {
+    return new URL(url).hostname.replace('www.', '');
+  } catch {
+    return null;
+  }
+})() : null;
+---
+
+<div
+  class="group relative cursor-pointer rounded-xl border border-gray-200 bg-white p-5 backdrop-blur-sm transition-all duration-300 hover:border-teal/30 hover:shadow-[0_0_20px_rgba(0,212,170,0.15)] hover:scale-[1.02] dark:border-indigo/20 dark:bg-dark/60"
+  data-tags={tagsAttr}
+  data-pagefind-meta={`type:${type}`}
+  data-pagefind-filter={`type:${type}`}
+  data-flyout
+  data-flyout-title={title}
+  data-flyout-description={description || ''}
+  data-flyout-url={url || ''}
+  data-flyout-type={type}
+  data-flyout-date={formattedDate || ''}
+  data-flyout-contributor={contributor || ''}
+>
+  <!-- Type badge -->
+  <div class="mb-3 flex items-center justify-between">
+    <span class="inline-flex items-center gap-1 rounded-md bg-gray-100 px-2 py-1 text-xs font-medium capitalize text-gray-500 dark:bg-indigo/20 dark:text-muted">
+      <span>{typeIcon}</span>
+      {type}
+    </span>
+    <div class="flex items-center gap-2">
+      {domain && (
+        <span class="inline-flex items-center gap-1 text-xs text-gray-400 dark:text-muted/60">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+          </svg>
+          {domain}
+        </span>
+      )}
+      {formattedDate && (
+        <span class="text-xs text-gray-400 dark:text-muted/60">{formattedDate}</span>
+      )}
+      <button
+        class="bookmark-btn relative z-10 rounded-lg p-1.5 text-gray-300 dark:text-muted/40 hover:text-accent dark:hover:text-accent transition-colors"
+        data-bookmark-id={`${type}-${title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
+        data-bookmark-title={title}
+        data-bookmark-url={url || ''}
+        data-bookmark-type={type}
+        onclick="event.stopPropagation(); toggleBookmark(this);"
+        aria-label="Bookmark this item"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 bookmark-icon-outline" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+        </svg>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 bookmark-icon-filled hidden" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Title -->
+  <h3 data-pagefind-weight="10" class="mb-2 text-lg font-semibold leading-snug text-gray-900 transition-colors duration-300 group-hover:text-teal dark:text-light">
+    {title}
+    {url && (
+      <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 inline-block h-3 w-3 text-gray-400 dark:text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+      </svg>
+    )}
+  </h3>
+
+  <!-- Description -->
+  {description && (
+    <p class="mb-4 text-sm leading-relaxed text-gray-500 line-clamp-3 dark:text-muted">{description}</p>
+  )}
+
+  <!-- Tags -->
+  {tags.length > 0 && (
+    <div class="mb-3 flex flex-wrap gap-1.5">
+      {tags.map((tag) => (
+        <a href={"/tags/" + tag + "/"} class="rounded-full bg-teal/10 px-2.5 py-0.5 text-xs font-medium text-teal-700 dark:text-teal hover:bg-teal/20 transition-colors relative z-10"
+           onclick="event.stopPropagation()">
+          {tag}
+        </a>
+      ))}
+    </div>
+  )}
+
+  <!-- Extra content slot -->
+  <slot />
+
+  <!-- Contributor -->
+  {contributor && (
+    <a href={`/contributors/${contributor.toLowerCase().replace(/[^a-z0-9]+/g, '-')}/`}
+       class="flex items-center gap-1.5 text-xs text-gray-400 dark:text-muted/60 hover:text-teal transition-colors relative z-10"
+       onclick="event.stopPropagation()">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+      </svg>
+      <span>{contributor}</span>
+    </a>
+  )}
+</div>

@@ -1,0 +1,282 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import JsonLd from '../../components/JsonLd.astro';
+---
+
+<BaseLayout title="Contribute | Fabric Data Agent" description="Help grow the Fabric Data Agent community by sharing resources">
+  <JsonLd
+    type="WebSite"
+    title="Contribute"
+    description="Help grow the Fabric Data Agent community by sharing resources"
+    url="/contribute"
+  />
+
+  <PageHeader
+    title="Contribute"
+    description="Help grow the Fabric Data Agent community by sharing resources"
+  />
+
+  <section class="mx-auto max-w-4xl px-4 pb-20 sm:px-6 lg:px-8">
+
+    <!-- How It Works -->
+    <div class="mb-16">
+      <h2 class="mb-4 text-2xl font-bold text-gray-900 dark:text-light sm:text-3xl">How It Works</h2>
+      <div class="rounded-xl border border-gray-200 bg-gray-50/60 dark:border-white/10 dark:bg-darker/60 p-6 backdrop-blur-sm">
+        <p class="text-lg leading-relaxed text-gray-500 dark:text-muted">
+          This site is backed by <span class="font-semibold text-teal">GitHub</span>. All content lives as Markdown files in the repository. Anyone can contribute by submitting a
+          <span class="font-semibold text-teal">Pull Request</span> — no special access required.
+        </p>
+      </div>
+    </div>
+
+    <!-- Step-by-Step Guide -->
+    <div class="mb-16">
+      <h2 class="mb-8 text-2xl font-bold text-gray-900 dark:text-light sm:text-3xl">Step-by-Step Guide</h2>
+
+      <div class="space-y-10">
+        <!-- Step 1 -->
+        <div class="flex gap-5">
+          <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-teal text-lg font-bold text-darker">1</div>
+          <div class="flex-1">
+            <h3 class="mb-2 text-xl font-semibold text-gray-900 dark:text-light">Fork the Repository</h3>
+            <p class="text-gray-500 dark:text-muted">
+              Start by <a href="https://github.com/pawarbi/fabric-data-agent-website" class="font-medium text-teal underline decoration-teal/40 transition hover:decoration-teal">forking the GitHub repository</a> to your own account. This creates a copy you can freely edit. <!-- TODO: Update YourUsername to the actual GitHub org/user -->
+            </p>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="flex gap-5">
+          <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-teal text-lg font-bold text-darker">2</div>
+          <div class="flex-1">
+            <h3 class="mb-2 text-xl font-semibold text-gray-900 dark:text-light">Choose What to Add</h3>
+            <p class="mb-3 text-gray-500 dark:text-muted">Pick the type of content you'd like to contribute:</p>
+            <div class="flex flex-wrap gap-2">
+              <span class="rounded-full border border-teal/30 bg-teal/10 px-3 py-1 text-sm font-medium text-teal">Article</span>
+              <span class="rounded-full border border-teal/30 bg-teal/10 px-3 py-1 text-sm font-medium text-teal">Resource</span>
+              <span class="rounded-full border border-teal/30 bg-teal/10 px-3 py-1 text-sm font-medium text-teal">Video</span>
+              <span class="rounded-full border border-teal/30 bg-teal/10 px-3 py-1 text-sm font-medium text-teal">Event</span>
+              <span class="rounded-full border border-teal/30 bg-teal/10 px-3 py-1 text-sm font-medium text-teal">Tool</span>
+              <span class="rounded-full border border-teal/30 bg-teal/10 px-3 py-1 text-sm font-medium text-teal">LinkedIn Post</span>
+              <span class="rounded-full border border-teal/30 bg-teal/10 px-3 py-1 text-sm font-medium text-teal">Learning Path</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="flex gap-5">
+          <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-teal text-lg font-bold text-darker">3</div>
+          <div class="flex-1">
+            <h3 class="mb-2 text-xl font-semibold text-gray-900 dark:text-light">Create a Markdown File</h3>
+            <p class="mb-3 text-gray-500 dark:text-muted">Add your file to the appropriate content directory:</p>
+            <div class="space-y-2 rounded-lg border border-gray-200 bg-gray-50 dark:border-white/10 dark:bg-dark p-4 font-mono text-sm">
+              <div class="text-gray-500 dark:text-muted"><span class="text-teal">Articles →</span> src/content/articles/your-article.md</div>
+              <div class="text-gray-500 dark:text-muted"><span class="text-teal">Resources →</span> src/content/resources/your-resource.md</div>
+              <div class="text-gray-500 dark:text-muted"><span class="text-teal">Videos →</span> src/content/videos/your-video.md</div>
+              <div class="text-gray-500 dark:text-muted"><span class="text-teal">Events →</span> src/content/events/your-event.md</div>
+              <div class="text-gray-500 dark:text-muted"><span class="text-teal">Tools →</span> src/content/tools/your-tool.md</div>
+              <div class="text-gray-500 dark:text-muted"><span class="text-teal">LinkedIn →</span> src/content/linkedin/your-post.md</div>
+              <div class="text-gray-500 dark:text-muted"><span class="text-teal">Learn →</span> src/content/learn/your-learning-path.md</div>
+            </div>
+            <p class="mt-3 text-sm text-gray-500 dark:text-muted">
+              <span class="font-medium text-gray-900 dark:text-light">Tip:</span> Use kebab-case for filenames, e.g., <code class="rounded bg-gray-200 dark:bg-dark px-1.5 py-0.5 font-mono text-xs">my-awesome-article.md</code>
+            </p>
+          </div>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="flex gap-5">
+          <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-teal text-lg font-bold text-darker">4</div>
+          <div class="flex-1">
+            <h3 class="mb-2 text-xl font-semibold text-gray-900 dark:text-light">Fill in the Frontmatter</h3>
+            <p class="mb-4 text-gray-500 dark:text-muted">Each content type has its own frontmatter template. Copy the relevant example below:</p>
+
+            <div class="space-y-6">
+              <!-- Article Template -->
+              <div>
+                <h4 class="mb-2 font-semibold text-teal">Article</h4>
+                <pre class="overflow-x-auto rounded-lg border border-gray-200 bg-gray-50 dark:border-white/10 dark:bg-dark p-4 text-sm leading-relaxed text-gray-500 dark:text-muted"><code><span class="text-teal">---</span>
+<span class="text-indigo">title</span>: <span class="text-gray-800 dark:text-light">"Article Title"</span>
+<span class="text-indigo">url</span>: <span class="text-gray-800 dark:text-light">"https://example.com/article"</span>
+<span class="text-indigo">author</span>: <span class="text-gray-800 dark:text-light">"Author Name"</span>
+<span class="text-indigo">publishDate</span>: <span class="text-gray-800 dark:text-light">2025-01-15</span>
+<span class="text-indigo">summary</span>: <span class="text-gray-800 dark:text-light">"A brief summary of what this article covers..."</span>
+<span class="text-indigo">tags</span>: <span class="text-gray-800 dark:text-light">["data-agent", "fabric"]</span>
+<span class="text-indigo">contributor</span>: <span class="text-gray-800 dark:text-light">"Your Name"</span>
+<span class="text-indigo">submittedDate</span>: <span class="text-gray-800 dark:text-light">2025-01-15</span>
+<span class="text-teal">---</span>
+
+Optional additional notes about why this article is worth reading.</code></pre>
+              </div>
+
+              <!-- Resource Template -->
+              <div>
+                <h4 class="mb-2 font-semibold text-teal">Resource</h4>
+                <pre class="overflow-x-auto rounded-lg border border-gray-200 bg-gray-50 dark:border-white/10 dark:bg-dark p-4 text-sm leading-relaxed text-gray-500 dark:text-muted"><code><span class="text-teal">---</span>
+<span class="text-indigo">title</span>: <span class="text-gray-800 dark:text-light">"Resource Title"</span>
+<span class="text-indigo">url</span>: <span class="text-gray-800 dark:text-light">"https://example.com/resource"</span>
+<span class="text-indigo">description</span>: <span class="text-gray-800 dark:text-light">"A brief description of this resource..."</span>
+<span class="text-indigo">category</span>: <span class="text-gray-800 dark:text-light">"documentation"</span>
+<span class="text-indigo">tags</span>: <span class="text-gray-800 dark:text-light">["data-agent", "fabric"]</span>
+<span class="text-indigo">contributor</span>: <span class="text-gray-800 dark:text-light">"Your Name"</span>
+<span class="text-teal">---</span>
+
+Optional notes about why this resource is valuable.</code></pre>
+              </div>
+
+              <!-- Video Template -->
+              <div>
+                <h4 class="mb-2 font-semibold text-teal">Video</h4>
+                <pre class="overflow-x-auto rounded-lg border border-gray-200 bg-gray-50 dark:border-white/10 dark:bg-dark p-4 text-sm leading-relaxed text-gray-500 dark:text-muted"><code><span class="text-teal">---</span>
+<span class="text-indigo">title</span>: <span class="text-gray-800 dark:text-light">"Video Title"</span>
+<span class="text-indigo">youtubeId</span>: <span class="text-gray-800 dark:text-light">"dQw4w9WgXcQ"</span>
+<span class="text-indigo">speaker</span>: <span class="text-gray-800 dark:text-light">"Presenter Name"</span>
+<span class="text-indigo">publishDate</span>: <span class="text-gray-800 dark:text-light">2025-01-15</span>
+<span class="text-indigo">description</span>: <span class="text-gray-800 dark:text-light">"What this video covers..."</span>
+<span class="text-indigo">tags</span>: <span class="text-gray-800 dark:text-light">["data-agent", "tutorial"]</span>
+<span class="text-indigo">contributor</span>: <span class="text-gray-800 dark:text-light">"Your Name"</span>
+<span class="text-teal">---</span>
+
+Optional notes about the video content.</code></pre>
+              </div>
+
+              <!-- Event Template -->
+              <div>
+                <h4 class="mb-2 font-semibold text-teal">Event</h4>
+                <pre class="overflow-x-auto rounded-lg border border-gray-200 bg-gray-50 dark:border-white/10 dark:bg-dark p-4 text-sm leading-relaxed text-gray-500 dark:text-muted"><code><span class="text-teal">---</span>
+<span class="text-indigo">title</span>: <span class="text-gray-800 dark:text-light">"Event Title"</span>
+<span class="text-indigo">url</span>: <span class="text-gray-800 dark:text-light">"https://example.com/event"</span>
+<span class="text-indigo">date</span>: <span class="text-gray-800 dark:text-light">2025-03-20</span>
+<span class="text-indigo">location</span>: <span class="text-gray-800 dark:text-light">"Virtual / City, Country"</span>
+<span class="text-indigo">type</span>: <span class="text-gray-800 dark:text-light">"conference"</span>
+<span class="text-indigo">description</span>: <span class="text-gray-800 dark:text-light">"What this event is about..."</span>
+<span class="text-indigo">tags</span>: <span class="text-gray-800 dark:text-light">["conference", "fabric"]</span>
+<span class="text-indigo">contributor</span>: <span class="text-gray-800 dark:text-light">"Your Name"</span>
+<span class="text-teal">---</span>
+
+Optional notes about the event.</code></pre>
+              </div>
+
+              <!-- Tool Template -->
+              <div>
+                <h4 class="mb-2 font-semibold text-teal">Tool</h4>
+                <pre class="overflow-x-auto rounded-lg border border-gray-200 bg-gray-50 dark:border-white/10 dark:bg-dark p-4 text-sm leading-relaxed text-gray-500 dark:text-muted"><code><span class="text-teal">---</span>
+<span class="text-indigo">title</span>: <span class="text-gray-800 dark:text-light">"Tool Name"</span>
+<span class="text-indigo">url</span>: <span class="text-gray-800 dark:text-light">"https://example.com/tool"</span>
+<span class="text-indigo">description</span>: <span class="text-gray-800 dark:text-light">"What this tool does..."</span>
+<span class="text-indigo">category</span>: <span class="text-gray-800 dark:text-light">"utility"</span>
+<span class="text-indigo">tags</span>: <span class="text-gray-800 dark:text-light">["data-agent", "utility"]</span>
+<span class="text-indigo">contributor</span>: <span class="text-gray-800 dark:text-light">"Your Name"</span>
+<span class="text-teal">---</span>
+
+Optional notes about how to use the tool.</code></pre>
+              </div>
+
+              <!-- LinkedIn Template -->
+              <div>
+                <h4 class="mb-2 font-semibold text-teal">LinkedIn Post</h4>
+                <pre class="overflow-x-auto rounded-lg border border-gray-200 bg-gray-50 dark:border-white/10 dark:bg-dark p-4 text-sm leading-relaxed text-gray-500 dark:text-muted"><code><span class="text-teal">---</span>
+<span class="text-indigo">title</span>: <span class="text-gray-800 dark:text-light">"Post Title"</span>
+<span class="text-indigo">linkedinUrl</span>: <span class="text-gray-800 dark:text-light">"https://www.linkedin.com/posts/example"</span>
+<span class="text-indigo">author</span>: <span class="text-gray-800 dark:text-light">"Author Name"</span>
+<span class="text-indigo">description</span>: <span class="text-gray-800 dark:text-light">"A brief description of the post..."</span>
+<span class="text-indigo">tags</span>: <span class="text-gray-800 dark:text-light">["data-agent", "fabric"]</span>
+<span class="text-indigo">contributor</span>: <span class="text-gray-800 dark:text-light">"Your Name"</span>
+<span class="text-indigo">submittedDate</span>: <span class="text-gray-800 dark:text-light">2025-01-15</span>
+<span class="text-teal">---</span>
+
+Optional notes about the LinkedIn post.</code></pre>
+              </div>
+
+              <!-- Learn Template -->
+              <div>
+                <h4 class="mb-2 font-semibold text-teal">Learning Path</h4>
+                <pre class="overflow-x-auto rounded-lg border border-gray-200 bg-gray-50 dark:border-white/10 dark:bg-dark p-4 text-sm leading-relaxed text-gray-500 dark:text-muted"><code><span class="text-teal">---</span>
+<span class="text-indigo">title</span>: <span class="text-gray-800 dark:text-light">"Learning Path Title"</span>
+<span class="text-indigo">description</span>: <span class="text-gray-800 dark:text-light">"What this learning path covers..."</span>
+<span class="text-indigo">difficulty</span>: <span class="text-gray-800 dark:text-light">"beginner"</span>
+<span class="text-indigo">estimatedTime</span>: <span class="text-gray-800 dark:text-light">"2 hours"</span>
+<span class="text-indigo">tags</span>: <span class="text-gray-800 dark:text-light">["data-agent", "tutorial"]</span>
+<span class="text-indigo">contributor</span>: <span class="text-gray-800 dark:text-light">"Your Name"</span>
+<span class="text-indigo">items</span>:
+  - <span class="text-indigo">title</span>: <span class="text-gray-800 dark:text-light">"Step 1 Title"</span>
+    <span class="text-indigo">type</span>: <span class="text-gray-800 dark:text-light">"article"</span>
+    <span class="text-indigo">url</span>: <span class="text-gray-800 dark:text-light">"https://example.com/step1"</span>
+    <span class="text-indigo">description</span>: <span class="text-gray-800 dark:text-light">"What this step covers..."</span>
+<span class="text-teal">---</span>
+
+Optional notes about the learning path.</code></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 5 -->
+        <div class="flex gap-5">
+          <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-teal text-lg font-bold text-darker">5</div>
+          <div class="flex-1">
+            <h3 class="mb-2 text-xl font-semibold text-gray-900 dark:text-light">Preview Locally</h3>
+            <p class="mb-3 text-gray-500 dark:text-muted">To preview your changes locally before submitting:</p>
+            <pre class="overflow-x-auto rounded-lg border border-gray-200 bg-gray-50 dark:border-white/10 dark:bg-dark p-4 text-sm leading-relaxed text-gray-500 dark:text-muted"><code>npm install
+npm run dev</code></pre>
+            <p class="mt-3 text-gray-500 dark:text-muted">
+              Open <code class="rounded bg-gray-200 dark:bg-dark px-1.5 py-0.5 font-mono text-xs">http://localhost:4321</code> to see your content live.
+            </p>
+          </div>
+        </div>
+
+        <!-- Step 6 -->
+        <div class="flex gap-5">
+          <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-teal text-lg font-bold text-darker">6</div>
+          <div class="flex-1">
+            <h3 class="mb-2 text-xl font-semibold text-gray-900 dark:text-light">Submit a Pull Request</h3>
+            <p class="text-gray-500 dark:text-muted">
+              Commit your changes and open a Pull Request to the main repository. The maintainers will review your submission and merge it once everything looks good.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Content Guidelines -->
+    <div class="mb-16">
+      <h2 class="mb-4 text-2xl font-bold text-gray-900 dark:text-light sm:text-3xl">Content Guidelines</h2>
+      <div class="rounded-xl border border-gray-200 bg-gray-50/60 dark:border-white/10 dark:bg-darker/60 p-6 backdrop-blur-sm">
+        <ul class="space-y-3 text-gray-500 dark:text-muted">
+          <li class="flex items-start gap-3">
+            <span class="mt-1 text-teal">✦</span>
+            <span>Content should be relevant to <span class="font-medium text-gray-900 dark:text-light">Microsoft Fabric Data Agents</span></span>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="mt-1 text-teal">✦</span>
+            <span>Provide accurate links that work</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="mt-1 text-teal">✦</span>
+            <span>Write clear, helpful summaries</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="mt-1 text-teal">✦</span>
+            <span>Add relevant tags for discoverability</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="mt-1 text-teal">✦</span>
+            <span>Be respectful and inclusive</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Questions -->
+    <div class="text-center">
+      <h2 class="mb-4 text-2xl font-bold text-gray-900 dark:text-light sm:text-3xl">Questions?</h2>
+      <p class="text-gray-500 dark:text-muted">
+        Have a question or need help contributing? Open an issue on
+        <a href="https://github.com/pawarbi/fabric-data-agent-website/issues" class="font-medium text-teal underline decoration-teal/40 transition hover:decoration-teal">GitHub Issues</a> <!-- TODO: Update YourUsername to the actual GitHub org/user -->
+        and we'll be happy to assist.
+      </p>
+    </div>
+
+  </section>
+</BaseLayout>

@@ -1,0 +1,145 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import JsonLd from '../../components/JsonLd.astro';
+import { getCollection } from 'astro:content';
+
+const allContent = [
+  ...await getCollection('articles'),
+  ...await getCollection('resources'),
+  ...await getCollection('videos'),
+  ...await getCollection('events'),
+  ...await getCollection('tools'),
+];
+const contributors = [...new Set(allContent.map(c => c.data.contributor))];
+
+const differentiators = [
+  {
+    icon: '🤖',
+    title: 'LLM-Friendly',
+    text: 'Structured data, llms.txt, and semantic markup designed for AI discoverability.',
+  },
+  {
+    icon: '🤝',
+    title: 'Community-Driven',
+    text: 'Anyone can contribute via GitHub PRs — your expertise matters.',
+  },
+  {
+    icon: '✨',
+    title: 'Curated',
+    text: 'All content is handpicked and summarized for maximum signal.',
+  },
+  {
+    icon: '🔓',
+    title: 'Open Source',
+    text: 'The entire site is on GitHub — fork it, improve it, make it yours.',
+  },
+];
+---
+
+<BaseLayout title="About | Fabric Data Agent" description="Learn about the Fabric Data Agent community resource">
+  <JsonLd
+    type="WebSite"
+    title="About | Fabric Data Agent"
+    description="Learn about the Fabric Data Agent community resource"
+    url="/about/"
+  />
+
+  <PageHeader
+    title="About"
+    description="Learn about the Fabric Data Agent community resource"
+  />
+
+  <div class="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8 space-y-16">
+
+    <!-- Mission Section -->
+    <section class="rounded-xl border border-gray-200 bg-white/60 dark:border-indigo/20 dark:bg-dark/60 p-8 backdrop-blur-sm">
+      <h2 class="mb-4 text-2xl font-bold text-gray-900 dark:text-light">Our Mission</h2>
+      <p class="text-gray-500 dark:text-muted leading-relaxed">
+        This is a community-driven resource hub for everything related to Microsoft Fabric Data Agents.
+        Our goal is to make it easy for practitioners to discover curated articles, videos, tools, events,
+        and resources — all in one place.
+      </p>
+    </section>
+
+    <!-- Creator Section -->
+    <section class="rounded-xl border border-gray-200 bg-white/60 dark:border-indigo/20 dark:bg-dark/60 p-8 backdrop-blur-sm">
+      <h2 class="mb-6 text-2xl font-bold text-gray-900 dark:text-light">Created By</h2>
+      <div class="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
+        <div class="flex h-14 w-14 items-center justify-center rounded-full bg-teal/10 text-2xl font-bold text-teal">
+          SP
+        </div>
+        <div>
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-light">Sandeep Pawar</h3>
+          <p class="text-gray-500 dark:text-muted">
+            Data &amp; AI enthusiast, Microsoft MVP, passionate about building with Fabric Data Agents.
+          </p>
+          <a
+            href="#"
+            class="mt-2 inline-flex items-center gap-1 text-sm text-teal hover:text-tealDark transition-colors"
+          >
+            GitHub Profile →
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contributors Section -->
+    <section class="rounded-xl border border-gray-200 bg-white/60 dark:border-indigo/20 dark:bg-dark/60 p-8 backdrop-blur-sm">
+      <h2 class="mb-4 text-2xl font-bold text-gray-900 dark:text-light">Contributors</h2>
+      <p class="mb-6 text-gray-500 dark:text-muted leading-relaxed">
+        This site is built by the community. Everyone who contributes content gets credited here.
+      </p>
+      {contributors.length > 0 ? (
+        <div class="flex flex-wrap gap-3">
+          {contributors.map(name => (
+            <a href={`/contributors/${name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}/`}
+               class="rounded-full border border-teal/30 bg-teal/10 px-4 py-1.5 text-sm font-medium text-teal hover:bg-teal/20 transition-colors">
+              {name}
+            </a>
+          ))}
+        </div>
+      ) : (
+        <p class="text-gray-500 dark:text-muted">
+          Be the first contributor!{' '}
+          <a href="/contribute/" class="text-teal hover:text-tealDark transition-colors">
+            Learn how →
+          </a>
+        </p>
+      )}
+    </section>
+
+    <!-- What Makes This Site Different -->
+    <section class="rounded-xl border border-gray-200 bg-white/60 dark:border-indigo/20 dark:bg-dark/60 p-8 backdrop-blur-sm">
+      <h2 class="mb-6 text-2xl font-bold text-gray-900 dark:text-light">What Makes This Site Different</h2>
+      <div class="grid gap-6 sm:grid-cols-2">
+        {differentiators.map(item => (
+          <div class="rounded-lg border border-gray-200 bg-gray-50/60 dark:border-indigo/10 dark:bg-darker/40 p-5">
+            <div class="mb-2 text-2xl">{item.icon}</div>
+            <h3 class="mb-1 text-lg font-semibold text-gray-900 dark:text-light">{item.title}</h3>
+            <p class="text-sm text-gray-500 dark:text-muted leading-relaxed">{item.text}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- Disclaimer -->
+    <section class="rounded-xl border border-amber-200/50 bg-amber-50/30 dark:border-indigo/20 dark:bg-dark/40 p-8 backdrop-blur-sm">
+      <h2 class="mb-4 text-2xl font-bold text-gray-900 dark:text-light">Disclaimer</h2>
+      <div class="space-y-3 text-sm leading-relaxed text-gray-600 dark:text-muted">
+        <p>
+          <strong class="text-gray-900 dark:text-light">This website is not affiliated with, sponsored by, or endorsed by Microsoft Corporation.</strong>
+          "Microsoft Fabric" and related trademarks are the property of Microsoft Corporation.
+        </p>
+        <p>
+          This is an independent, community-built and community-maintained open source project. It serves as a curated resource hub — aggregating and linking to content created by others in the community.
+        </p>
+        <p>
+          All linked articles, blog posts, videos, and other content remain the intellectual property of their respective original authors and publishers. We provide summaries and links for educational and informational purposes only. If you are a content owner and would like your content removed, please open a 
+          <a href="https://github.com/YourUsername/data-agent-website/issues" class="text-teal hover:text-tealDark transition-colors underline decoration-teal/30 underline-offset-2">GitHub issue</a>.
+        </p>
+      </div>
+    </section>
+
+  </div>
+</BaseLayout>
