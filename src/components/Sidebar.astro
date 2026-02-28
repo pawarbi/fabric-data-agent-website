@@ -1,6 +1,6 @@
 ---
 const currentPath = Astro.url.pathname;
-const base = import.meta.env.BASE_URL;
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 
 interface NavItem {
   href: string;

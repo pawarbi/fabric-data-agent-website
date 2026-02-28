@@ -1,6 +1,6 @@
 ---
 const currentYear = new Date().getFullYear();
-const base = import.meta.env.BASE_URL;
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 ---
 
 <footer class="relative border-t border-gray-200 bg-gray-50 dark:border-indigo/20 dark:bg-darker" data-pagefind-ignore>

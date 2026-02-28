@@ -23,7 +23,7 @@ allContent.forEach(item => {
 });
 
 const sortedTags = [...tagCounts.entries()].sort((a, b) => b[1] - a[1]);
-const base = import.meta.env.BASE_URL;
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 const maxCount = sortedTags.length > 0 ? sortedTags[0][1] : 1;
 ---
 

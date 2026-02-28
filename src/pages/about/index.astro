@@ -12,7 +12,7 @@ const allContent = [
   ...await getCollection('tools'),
 ];
 const contributors = [...new Set(allContent.map(c => c.data.contributor))];
-const base = import.meta.env.BASE_URL;
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 
 const differentiators = [
   {

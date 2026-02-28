@@ -21,7 +21,7 @@ allContent.forEach(item => {
 });
 
 const sortedContributors = [...contributorCounts.entries()].sort((a, b) => b[1] - a[1]);
-const base = import.meta.env.BASE_URL;
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 
 const getBadge = (count: number) => {
   if (count >= 10) return '🥇';

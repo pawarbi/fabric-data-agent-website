@@ -10,7 +10,7 @@ interface Props {
 }
 
 const { title, description, url, tags = [], contributor, type = 'article', date } = Astro.props;
-const base = import.meta.env.BASE_URL;
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 
 const typeIcons: Record<string, string> = {
   article: '📄',

@@ -7,7 +7,7 @@ import JsonLd from '../../components/JsonLd.astro';
 import { getCollection } from 'astro:content';
 
 const articles = await getCollection('articles');
-const base = import.meta.env.BASE_URL;
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 
 articles.sort((a, b) => new Date(b.data.publishDate).getTime() - new Date(a.data.publishDate).getTime());
 

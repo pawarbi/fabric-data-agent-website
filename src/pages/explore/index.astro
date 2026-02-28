@@ -39,7 +39,7 @@ addItems(videos, 'video');
 addItems(events, 'event');
 addItems(tools, 'tool');
 addItems(linkedin, 'linkedin');
-const base = import.meta.env.BASE_URL;
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 
 const tags = [...tagSet];
 

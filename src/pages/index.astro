@@ -12,7 +12,7 @@ const allEvents = await getCollection('events');
 const allTools = await getCollection('tools');
 const allLinkedin = await getCollection('linkedin');
 const allLearnPaths = await getCollection('learn');
-const base = import.meta.env.BASE_URL;
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 const learnPaths = allLearnPaths.sort((a, b) => {
   const order: Record<string, number> = { beginner: 0, intermediate: 1, advanced: 2 };
   return (order[a.data.difficulty] || 0) - (order[b.data.difficulty] || 0);
