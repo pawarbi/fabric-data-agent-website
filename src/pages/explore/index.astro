@@ -39,13 +39,14 @@ addItems(videos, 'video');
 addItems(events, 'event');
 addItems(tools, 'tool');
 addItems(linkedin, 'linkedin');
+const base = import.meta.env.BASE_URL;
 
 const tags = [...tagSet];
 
 // Build graph data
 const nodes = [
   ...contentNodes.map(n => ({ ...n, group: 'content' })),
-  ...tags.map(t => ({ id: `tag-${t}`, title: t, type: 'tag', group: 'tag', tags: [], url: `/tags/${t}/`, description: '', contributor: '', youtubeId: '' })),
+  ...tags.map(t => ({ id: `tag-${t}`, title: t, type: 'tag', group: 'tag', tags: [], url: `${base}tags/${t}/`, description: '', contributor: '', youtubeId: '' })),
 ];
 
 const links: { source: string; target: string }[] = [];

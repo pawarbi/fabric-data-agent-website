@@ -1,5 +1,6 @@
 ---
 import ThemeToggle from './ThemeToggle.astro';
+const base = import.meta.env.BASE_URL;
 ---
 
 <header
@@ -26,7 +27,7 @@ import ThemeToggle from './ThemeToggle.astro';
   <!-- Right actions -->
   <div class="flex items-center gap-2">
     <a
-      href="/search/"
+      href={`${base}search/`}
       class="rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-200 hover:text-teal dark:text-muted dark:hover:bg-indigo/10"
       aria-label="Search"
     >

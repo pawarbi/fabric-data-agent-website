@@ -24,6 +24,7 @@ export async function getStaticPaths() {
 }
 
 const { contributorName } = Astro.props;
+const base = import.meta.env.BASE_URL;
 
 const [articles, resources, videos, events, tools, linkedin] = await Promise.all([
   getCollection('articles'),
@@ -61,7 +62,7 @@ const sections = [
   <section class="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
     <!-- Back link -->
     <div class="mb-8">
-      <a href="/contributors/" class="inline-flex items-center gap-1.5 text-sm font-medium text-teal-700 transition-colors hover:text-teal dark:text-teal dark:hover:text-tealDark">
+      <a href={`${base}contributors/`} class="inline-flex items-center gap-1.5 text-sm font-medium text-teal-700 transition-colors hover:text-teal dark:text-teal dark:hover:text-tealDark">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
         </svg>

@@ -12,6 +12,7 @@ const allEvents = await getCollection('events');
 const allTools = await getCollection('tools');
 const allLinkedin = await getCollection('linkedin');
 const allLearnPaths = await getCollection('learn');
+const base = import.meta.env.BASE_URL;
 const learnPaths = allLearnPaths.sort((a, b) => {
   const order: Record<string, number> = { beginner: 0, intermediate: 1, advanced: 2 };
   return (order[a.data.difficulty] || 0) - (order[b.data.difficulty] || 0);
@@ -46,11 +47,11 @@ const difficultyColors: Record<string, { bg: string; text: string }> = {
 const siteUrl = Astro.site?.toString() || 'https://fabricdataagent.com';
 
 const sections = [
-  { key: 'articles', label: 'Articles', href: '/articles/', items: latestArticles, type: 'article' as const, dateField: 'publishDate' },
-  { key: 'videos', label: 'Videos', href: '/videos/', items: latestVideos, type: 'video' as const, dateField: 'publishDate' },
-  { key: 'events', label: 'Events', href: '/events/', items: latestEvents, type: 'event' as const, dateField: 'date' },
-  { key: 'resources', label: 'Resources', href: '/resources/', items: latestResources, type: 'resource' as const, dateField: null },
-  { key: 'tools', label: 'Tools', href: '/tools/', items: latestTools, type: 'tool' as const, dateField: null },
+  { key: 'articles', label: 'Articles', href: `${base}articles/`, items: latestArticles, type: 'article' as const, dateField: 'publishDate' },
+  { key: 'videos', label: 'Videos', href: `${base}videos/`, items: latestVideos, type: 'video' as const, dateField: 'publishDate' },
+  { key: 'events', label: 'Events', href: `${base}events/`, items: latestEvents, type: 'event' as const, dateField: 'date' },
+  { key: 'resources', label: 'Resources', href: `${base}resources/`, items: latestResources, type: 'resource' as const, dateField: null },
+  { key: 'tools', label: 'Tools', href: `${base}tools/`, items: latestTools, type: 'tool' as const, dateField: null },
 ];
 ---
 
@@ -98,7 +99,7 @@ const sections = [
 
       <!-- Search bar -->
       <div class="mx-auto mt-10 max-w-xl">
-        <form action="/search/" method="get" class="group flex items-center gap-3 rounded-xl border border-gray-300 bg-white/60 dark:border-indigo/30 dark:bg-dark/60 px-5 py-4 backdrop-blur-sm transition-all duration-300 hover:border-teal/40 hover:shadow-[0_0_30px_rgba(0,212,170,0.1)]">
+        <form action={`${base}search/`} method="get" class="group flex items-center gap-3 rounded-xl border border-gray-300 bg-white/60 dark:border-indigo/30 dark:bg-dark/60 px-5 py-4 backdrop-blur-sm transition-all duration-300 hover:border-teal/40 hover:shadow-[0_0_30px_rgba(0,212,170,0.1)]">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 dark:text-muted transition-colors group-hover:text-teal" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
@@ -130,14 +131,14 @@ const sections = [
       organization's data — enabling anyone to query databases, analyze reports, and get insights without
       writing a single line of code.
     </p>
-    <a href="/learn/get-started/" class="inline-flex items-center gap-2 mt-6 text-sm font-medium text-teal hover:text-tealDark transition-colors">
+    <a href={`${base}learn/get-started/`} class="inline-flex items-center gap-2 mt-6 text-sm font-medium text-teal hover:text-tealDark transition-colors">
       Learn more about Fabric Data Agents →
     </a>
   </section>
 
   <!-- ═══════════════════ START HERE BANNER ═══════════════════ -->
   <section class="mx-auto max-w-7xl px-4 pb-8 sm:px-6 lg:px-8">
-    <a href="/learn/get-started/" class="group block rounded-xl border border-teal/20 bg-teal/5 dark:bg-teal/5 p-6 transition-all duration-300 hover:border-teal/40 hover:shadow-[0_0_30px_rgba(0,212,170,0.1)]">
+    <a href={`${base}learn/get-started/`} class="group block rounded-xl border border-teal/20 bg-teal/5 dark:bg-teal/5 p-6 transition-all duration-300 hover:border-teal/40 hover:shadow-[0_0_30px_rgba(0,212,170,0.1)]">
       <div class="flex items-center gap-4">
         <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-teal/10 text-2xl">🚀</div>
         <div>
@@ -153,7 +154,7 @@ const sections = [
   <section class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8" id="learn">
     <div class="mb-8 flex items-center justify-between">
       <h2 class="text-2xl font-bold text-gray-900 dark:text-light sm:text-3xl">Learning Paths</h2>
-      <a href="/learn/" class="group inline-flex items-center gap-1 text-sm font-medium text-teal transition-colors hover:text-tealDark">
+      <a href={`${base}learn/`} class="group inline-flex items-center gap-1 text-sm font-medium text-teal transition-colors hover:text-tealDark">
         View all
         <span class="transition-transform group-hover:translate-x-0.5">→</span>
       </a>
@@ -164,7 +165,7 @@ const sections = [
         {learnPaths.map((path) => {
           const c = difficultyColors[path.data.difficulty] || difficultyColors.beginner;
           return (
-            <a href={`/learn/${path.id}/`} class="group rounded-xl border border-gray-200 bg-white/60 dark:border-indigo/20 dark:bg-dark/60 p-5 backdrop-blur-sm transition-all duration-300 hover:border-teal/30 hover:shadow-[0_0_20px_rgba(0,212,170,0.15)] hover:scale-[1.02] block">
+            <a href={`${base}learn/${path.id}/`} class="group rounded-xl border border-gray-200 bg-white/60 dark:border-indigo/20 dark:bg-dark/60 p-5 backdrop-blur-sm transition-all duration-300 hover:border-teal/30 hover:shadow-[0_0_20px_rgba(0,212,170,0.15)] hover:scale-[1.02] block">
               <div class="mb-3 flex items-center gap-2">
                 <span class={`inline-block rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize ${c.bg} ${c.text}`}>{path.data.difficulty}</span>
               </div>
@@ -188,7 +189,7 @@ const sections = [
       </div>
     ) : (
       <div class="rounded-xl border border-dashed border-gray-200 dark:border-indigo/20 py-12 text-center">
-        <p class="text-gray-500 dark:text-muted">No learning paths yet — <a href="/contribute/" class="text-teal underline decoration-teal/30 underline-offset-2 transition-colors hover:text-tealDark">be the first to contribute</a>!</p>
+        <p class="text-gray-500 dark:text-muted">No learning paths yet — <a href={`${base}contribute/`} class="text-teal underline decoration-teal/30 underline-offset-2 transition-colors hover:text-tealDark">be the first to contribute</a>!</p>
       </div>
     )}
   </section>
@@ -220,7 +221,7 @@ const sections = [
         </div>
       ) : (
         <div class="rounded-xl border border-dashed border-gray-200 dark:border-indigo/20 py-12 text-center">
-          <p class="text-gray-500 dark:text-muted">No {label.toLowerCase()} yet — <a href="/contribute/" class="text-teal underline decoration-teal/30 underline-offset-2 transition-colors hover:text-tealDark">be the first to contribute</a>!</p>
+          <p class="text-gray-500 dark:text-muted">No {label.toLowerCase()} yet — <a href={`${base}contribute/`} class="text-teal underline decoration-teal/30 underline-offset-2 transition-colors hover:text-tealDark">be the first to contribute</a>!</p>
         </div>
       )}
     </section>
@@ -230,7 +231,7 @@ const sections = [
   <section class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8" id="linkedin">
     <div class="mb-8 flex items-center justify-between">
       <h2 class="text-2xl font-bold text-gray-900 dark:text-light sm:text-3xl">LinkedIn Posts</h2>
-      <a href="/linkedin/" class="group inline-flex items-center gap-1 text-sm font-medium text-teal transition-colors hover:text-tealDark">
+      <a href={`${base}linkedin/`} class="group inline-flex items-center gap-1 text-sm font-medium text-teal transition-colors hover:text-tealDark">
         View all
         <span class="transition-transform group-hover:translate-x-0.5">→</span>
       </a>
@@ -286,7 +287,7 @@ const sections = [
       </div>
     ) : (
       <div class="rounded-xl border border-dashed border-gray-200 dark:border-indigo/20 py-12 text-center">
-        <p class="text-gray-500 dark:text-muted">No linkedin posts yet — <a href="/contribute/" class="text-teal underline decoration-teal/30 underline-offset-2 transition-colors hover:text-tealDark">be the first to contribute</a>!</p>
+        <p class="text-gray-500 dark:text-muted">No linkedin posts yet — <a href={`${base}contribute/`} class="text-teal underline decoration-teal/30 underline-offset-2 transition-colors hover:text-tealDark">be the first to contribute</a>!</p>
       </div>
     )}
   </section>
@@ -305,7 +306,7 @@ const sections = [
           This hub is built by the community, for the community. Anyone can contribute articles, videos, tools, and more by submitting a GitHub pull request.
         </p>
         <a
-          href="/contribute/"
+          href={`${base}contribute/`}
           class="mt-8 inline-flex items-center gap-2 rounded-lg bg-teal px-6 py-3 text-sm font-semibold text-darker transition-all duration-300 hover:bg-tealDark hover:shadow-[0_0_24px_rgba(0,212,170,0.3)]"
         >
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">

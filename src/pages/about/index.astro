@@ -12,6 +12,7 @@ const allContent = [
   ...await getCollection('tools'),
 ];
 const contributors = [...new Set(allContent.map(c => c.data.contributor))];
+const base = import.meta.env.BASE_URL;
 
 const differentiators = [
   {
@@ -93,7 +94,7 @@ const differentiators = [
       {contributors.length > 0 ? (
         <div class="flex flex-wrap gap-3">
           {contributors.map(name => (
-            <a href={`/contributors/${name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}/`}
+            <a href={`${base}contributors/${name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}/`}
                class="rounded-full border border-teal/30 bg-teal/10 px-4 py-1.5 text-sm font-medium text-teal hover:bg-teal/20 transition-colors">
               {name}
             </a>
@@ -102,7 +103,7 @@ const differentiators = [
       ) : (
         <p class="text-gray-500 dark:text-muted">
           Be the first contributor!{' '}
-          <a href="/contribute/" class="text-teal hover:text-tealDark transition-colors">
+          <a href={`${base}contribute/`} class="text-teal hover:text-tealDark transition-colors">
             Learn how →
           </a>
         </p>

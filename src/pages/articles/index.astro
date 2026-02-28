@@ -7,6 +7,7 @@ import JsonLd from '../../components/JsonLd.astro';
 import { getCollection } from 'astro:content';
 
 const articles = await getCollection('articles');
+const base = import.meta.env.BASE_URL;
 
 articles.sort((a, b) => new Date(b.data.publishDate).getTime() - new Date(a.data.publishDate).getTime());
 
@@ -53,7 +54,7 @@ const allTags = [...new Set(articles.flatMap((a) => a.data.tags))].sort();
     ) : (
       <div class="rounded-xl border border-dashed border-gray-200 dark:border-indigo/20 py-16 text-center">
         <p class="text-lg text-gray-500 dark:text-muted">No articles yet. Be the first to contribute!</p>
-        <a href="/contribute/" class="mt-4 inline-flex items-center gap-2 rounded-lg bg-teal px-5 py-2.5 text-sm font-semibold text-darker transition-all duration-300 hover:bg-tealDark hover:shadow-[0_0_20px_rgba(0,212,170,0.2)]">
+        <a href={`${base}contribute/`} class="mt-4 inline-flex items-center gap-2 rounded-lg bg-teal px-5 py-2.5 text-sm font-semibold text-darker transition-all duration-300 hover:bg-tealDark hover:shadow-[0_0_20px_rgba(0,212,170,0.2)]">
           Contribute an Article
         </a>
       </div>

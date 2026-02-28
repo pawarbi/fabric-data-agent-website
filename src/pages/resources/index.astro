@@ -7,6 +7,7 @@ import ContentCard from '../../components/ContentCard.astro';
 import JsonLd from '../../components/JsonLd.astro';
 
 const allResources = await getCollection('resources');
+const base = import.meta.env.BASE_URL;
 const allTags = [...new Set(allResources.flatMap((r) => r.data.tags))];
 ---
 
@@ -43,7 +44,7 @@ const allTags = [...new Set(allResources.flatMap((r) => r.data.tags))];
     ) : (
       <div class="rounded-xl border border-dashed border-gray-200 dark:border-indigo/20 py-16 text-center">
         <p class="text-lg text-gray-500 dark:text-muted">No resources available yet. Check back soon!</p>
-        <p class="mt-2 text-sm text-gray-400 dark:text-muted/60">Know a useful resource? <a href="/contribute/" class="text-teal underline decoration-teal/30 underline-offset-2 hover:text-tealDark">Contribute</a></p>
+        <p class="mt-2 text-sm text-gray-400 dark:text-muted/60">Know a useful resource? <a href={`${base}contribute/`} class="text-teal underline decoration-teal/30 underline-offset-2 hover:text-tealDark">Contribute</a></p>
       </div>
     )}
   </section>

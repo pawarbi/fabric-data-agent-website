@@ -1,5 +1,6 @@
 ---
 const currentYear = new Date().getFullYear();
+const base = import.meta.env.BASE_URL;
 ---
 
 <footer class="relative border-t border-gray-200 bg-gray-50 dark:border-indigo/20 dark:bg-darker" data-pagefind-ignore>
@@ -10,7 +11,7 @@ const currentYear = new Date().getFullYear();
     <div class="flex flex-col items-center justify-between gap-6 md:flex-row">
       <!-- Brand -->
       <div class="text-center md:text-left">
-        <a href="/" class="inline-flex items-center gap-2 text-lg font-bold text-gray-900 transition-colors hover:text-teal dark:text-light">
+        <a href={base} class="inline-flex items-center gap-2 text-lg font-bold text-gray-900 transition-colors hover:text-teal dark:text-light">
           <span class="text-teal">⚡</span>
           <span>Fabric Data Agent</span>
         </a>
@@ -20,8 +21,8 @@ const currentYear = new Date().getFullYear();
       <!-- Links -->
       <div class="flex items-center gap-6 text-sm">
         <a href="#" class="text-gray-500 transition-colors duration-300 hover:text-teal dark:text-muted">GitHub</a>
-        <a href="/contribute/" class="text-gray-500 transition-colors duration-300 hover:text-teal dark:text-muted">Contribute</a>
-        <a href="/about/" class="text-gray-500 transition-colors duration-300 hover:text-teal dark:text-muted">About</a>
+        <a href={`${base}contribute/`} class="text-gray-500 transition-colors duration-300 hover:text-teal dark:text-muted">Contribute</a>
+        <a href={`${base}about/`} class="text-gray-500 transition-colors duration-300 hover:text-teal dark:text-muted">About</a>
       </div>
     </div>
 

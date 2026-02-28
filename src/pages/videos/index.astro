@@ -6,6 +6,7 @@ import PageHeader from '../../components/PageHeader.astro';
 import JsonLd from '../../components/JsonLd.astro';
 
 const allVideos = await getCollection('videos');
+const base = import.meta.env.BASE_URL;
 const videos = allVideos.sort(
   (a, b) => new Date(b.data.publishDate).getTime() - new Date(a.data.publishDate).getTime()
 );
@@ -32,7 +33,7 @@ const allTags = [...new Set(videos.flatMap((v) => v.data.tags))].sort();
     {videos.length === 0 ? (
       <div class="text-center py-20">
         <p class="text-gray-500 dark:text-muted text-lg">No videos available yet. Check back soon!</p>
-        <p class="mt-2 text-sm text-gray-400 dark:text-muted/60">Have a video to share? <a href="/contribute/" class="text-teal underline decoration-teal/30 underline-offset-2 hover:text-tealDark">Contribute</a></p>
+        <p class="mt-2 text-sm text-gray-400 dark:text-muted/60">Have a video to share? <a href={`${base}contribute/`} class="text-teal underline decoration-teal/30 underline-offset-2 hover:text-tealDark">Contribute</a></p>
       </div>
     ) : (
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">

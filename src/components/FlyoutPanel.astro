@@ -137,7 +137,7 @@ function initFlyout() {
     const tags = data.tags ? data.tags.split(',').filter(Boolean) : [];
     if (tags.length > 0) {
       tagsEl.innerHTML = tags.map(tag =>
-        `<a href="/tags/${encodeURIComponent(tag.trim())}/" class="rounded-full bg-teal/10 px-3 py-1 text-xs font-medium text-teal-700 dark:text-teal hover:bg-teal/20 transition-colors">${tag.trim()}</a>`
+        `<a href="${(window as any).__BASE_URL__ || '/'}tags/${encodeURIComponent(tag.trim())}/" class="rounded-full bg-teal/10 px-3 py-1 text-xs font-medium text-teal-700 dark:text-teal hover:bg-teal/20 transition-colors">${tag.trim()}</a>`
       ).join('');
       tagsContainer.classList.remove('hidden');
     } else {
