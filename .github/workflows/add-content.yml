@@ -8,15 +8,29 @@ permissions:
   contents: write
   issues: write
 
+concurrency:
+  group: "add-content"
+  cancel-in-progress: false
+
 jobs:
   add-content:
-    if: github.event.label.name == 'approved'
+    if: github.event.label.name == 'approved' && contains(github.event.issue.labels.*.name, 'content-submission')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
       - name: Parse issue and create content file
+        id: parse
         uses: actions/github-script@v7
         with:
           script: |
@@ -49,13 +63,23 @@ jobs:
               return;
             }
 
-            // Parse GitHub Issue Form fields from the body
-            // Format: ### Field Label\n\nValue\n\n### Next Field...
+            // Parse GitHub Issue Form fields
             function parseField(body, label) {
-              const regex = new RegExp(`### ${label}\\s*\\n\\n([\\s\\S]*?)(?=\\n### |$)`, 'i');
+              const escaped = label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+              const regex = new RegExp(`### ${escaped}\\s*\\n\\n([\\s\\S]*?)(?=\\n### |$)`, 'i');
               const match = body.match(regex);
               if (!match) return '';
               return match[1].trim().replace(/^_No response_$/i, '');
+            }
+
+            // Sanitize string for YAML double-quoted values
+            function yamlSafe(str) {
+              return str
+                .replace(/\\/g, '\\\\')
+                .replace(/"/g, '\\"')
+                .replace(/\n/g, ' ')
+                .replace(/\r/g, '')
+                .trim();
             }
 
             // Generate a kebab-case filename from the title
@@ -71,174 +95,265 @@ jobs:
             // Parse tags from comma-separated string to YAML array
             function formatTags(tagStr) {
               if (!tagStr) return '[]';
-              const tags = tagStr.split(',').map(t => t.trim().toLowerCase()).filter(Boolean);
+              const tags = tagStr.split(',').map(t => t.trim().toLowerCase().replace(/[^a-z0-9-]/g, '')).filter(Boolean);
               return JSON.stringify(tags);
             }
 
-            // Get today's date as YYYY-MM-DD
+            // Validate and normalize a date string to YYYY-MM-DD
+            function validateDate(str) {
+              if (!str) return '';
+              const d = new Date(str);
+              if (isNaN(d.getTime())) return '';
+              return d.toISOString().split('T')[0];
+            }
+
+            // Validate URL format
+            function validateUrl(str) {
+              try {
+                new URL(str);
+                return str.trim();
+              } catch {
+                return '';
+              }
+            }
+
+            // Extract YouTube video ID from URL or raw ID
+            function extractYouTubeId(input) {
+              if (!input) return '';
+              input = input.trim();
+              // Already just an ID (no slashes or dots)
+              if (/^[a-zA-Z0-9_-]{8,15}$/.test(input)) return input;
+              // Full URL patterns
+              const patterns = [
+                /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]+)/,
+                /(?:youtube\.com\/shorts\/)([a-zA-Z0-9_-]+)/
+              ];
+              for (const p of patterns) {
+                const m = input.match(p);
+                if (m) return m[1];
+              }
+              // Fall back to raw input
+              return input;
+            }
+
             const today = new Date().toISOString().split('T')[0];
+            const errors = [];
 
             let frontmatter = '';
             let title = '';
 
             if (contentType === 'article') {
               title = parseField(body, 'Article Title');
-              const url = parseField(body, 'Article URL');
+              const url = validateUrl(parseField(body, 'Article URL'));
               const author = parseField(body, 'Author');
-              const publishDate = parseField(body, 'Publish Date');
+              const publishDate = validateDate(parseField(body, 'Publish Date'));
               const summary = parseField(body, 'Summary');
               const tags = parseField(body, 'Tags');
               const contributor = parseField(body, 'Your Name');
               const notes = parseField(body, 'Additional Notes');
 
-              if (!title || !url) {
-                core.setFailed('Missing required fields: Article Title and Article URL');
-                return;
-              }
+              if (!title) errors.push('Article Title is required');
+              if (!url) errors.push('Article URL is missing or invalid (must be a full URL starting with http)');
+              if (!summary) errors.push('Summary is required');
 
-              frontmatter = `---
-            title: "${title.replace(/"/g, '\\"')}"
-            url: "${url}"
-            author: "${author.replace(/"/g, '\\"')}"
-            publishDate: ${publishDate || today}
-            submittedDate: ${today}
-            summary: "${summary.replace(/"/g, '\\"').replace(/\n/g, ' ')}"
-            tags: ${formatTags(tags)}
-            contributor: "${contributor.replace(/"/g, '\\"')}"
-            ---
-            ${notes ? '\n' + notes : ''}`.replace(/^            /gm, '');
+              if (errors.length === 0) {
+                frontmatter = [
+                  '---',
+                  `title: "${yamlSafe(title)}"`,
+                  `url: "${url}"`,
+                  `author: "${yamlSafe(author)}"`,
+                  `publishDate: ${publishDate || today}`,
+                  `submittedDate: ${today}`,
+                  `summary: "${yamlSafe(summary)}"`,
+                  `tags: ${formatTags(tags)}`,
+                  `contributor: "${yamlSafe(contributor)}"`,
+                  '---',
+                  notes ? '\n' + notes : ''
+                ].join('\n');
+              }
 
             } else if (contentType === 'video') {
               title = parseField(body, 'Video Title');
-              const youtubeId = parseField(body, 'YouTube Video ID');
+              const youtubeId = extractYouTubeId(parseField(body, 'YouTube Video ID'));
               const speaker = parseField(body, 'Speaker / Presenter');
-              const publishDate = parseField(body, 'Publish Date');
+              const publishDate = validateDate(parseField(body, 'Publish Date'));
               const description = parseField(body, 'Description');
               const tags = parseField(body, 'Tags');
               const contributor = parseField(body, 'Your Name');
 
-              if (!title || !youtubeId) {
-                core.setFailed('Missing required fields: Video Title and YouTube Video ID');
-                return;
-              }
+              if (!title) errors.push('Video Title is required');
+              if (!youtubeId) errors.push('YouTube Video ID is required');
+              if (!description) errors.push('Description is required');
 
-              frontmatter = `---
-            title: "${title.replace(/"/g, '\\"')}"
-            youtubeId: "${youtubeId}"
-            speaker: "${speaker.replace(/"/g, '\\"')}"
-            publishDate: ${publishDate || today}
-            description: "${description.replace(/"/g, '\\"').replace(/\n/g, ' ')}"
-            tags: ${formatTags(tags)}
-            contributor: "${contributor.replace(/"/g, '\\"')}"
-            ---`.replace(/^            /gm, '');
+              if (errors.length === 0) {
+                frontmatter = [
+                  '---',
+                  `title: "${yamlSafe(title)}"`,
+                  `youtubeId: "${youtubeId}"`,
+                  `speaker: "${yamlSafe(speaker)}"`,
+                  `publishDate: ${publishDate || today}`,
+                  `description: "${yamlSafe(description)}"`,
+                  `tags: ${formatTags(tags)}`,
+                  `contributor: "${yamlSafe(contributor)}"`,
+                  '---'
+                ].join('\n');
+              }
 
             } else if (contentType === 'resource') {
               title = parseField(body, 'Resource Title');
-              const url = parseField(body, 'Resource URL');
+              const url = validateUrl(parseField(body, 'Resource URL'));
               const description = parseField(body, 'Description');
               const category = parseField(body, 'Category');
               const tags = parseField(body, 'Tags');
               const contributor = parseField(body, 'Your Name');
 
-              if (!title || !url) {
-                core.setFailed('Missing required fields: Resource Title and Resource URL');
-                return;
-              }
+              if (!title) errors.push('Resource Title is required');
+              if (!url) errors.push('Resource URL is missing or invalid');
+              if (!description) errors.push('Description is required');
 
-              frontmatter = `---
-            title: "${title.replace(/"/g, '\\"')}"
-            url: "${url}"
-            description: "${description.replace(/"/g, '\\"').replace(/\n/g, ' ')}"
-            category: "${category}"
-            tags: ${formatTags(tags)}
-            contributor: "${contributor.replace(/"/g, '\\"')}"
-            ---`.replace(/^            /gm, '');
+              if (errors.length === 0) {
+                frontmatter = [
+                  '---',
+                  `title: "${yamlSafe(title)}"`,
+                  `url: "${url}"`,
+                  `description: "${yamlSafe(description)}"`,
+                  `category: "${yamlSafe(category)}"`,
+                  `tags: ${formatTags(tags)}`,
+                  `contributor: "${yamlSafe(contributor)}"`,
+                  '---'
+                ].join('\n');
+              }
 
             } else if (contentType === 'event') {
               title = parseField(body, 'Event Title');
-              const url = parseField(body, 'Event URL');
-              const date = parseField(body, 'Event Date');
-              const endDate = parseField(body, 'End Date \\(optional\\)');
+              const url = validateUrl(parseField(body, 'Event URL'));
+              const date = validateDate(parseField(body, 'Event Date'));
+              const endDate = validateDate(parseField(body, 'End Date (optional)'));
               const location = parseField(body, 'Location');
               const eventType = parseField(body, 'Event Type');
               const description = parseField(body, 'Description');
               const tags = parseField(body, 'Tags');
               const contributor = parseField(body, 'Your Name');
 
-              if (!title || !url || !date) {
-                core.setFailed('Missing required fields: Event Title, Event URL, and Event Date');
-                return;
+              if (!title) errors.push('Event Title is required');
+              if (!url) errors.push('Event URL is missing or invalid');
+              if (!date) errors.push('Event Date is missing or invalid (use YYYY-MM-DD format)');
+              if (!description) errors.push('Description is required');
+
+              const validTypes = ['conference', 'session', 'meetup', 'webinar'];
+              const normalizedType = eventType ? eventType.toLowerCase().trim() : 'conference';
+              if (!validTypes.includes(normalizedType)) {
+                errors.push(`Event Type must be one of: ${validTypes.join(', ')}`);
               }
 
-              let fm = `---
-            title: "${title.replace(/"/g, '\\"')}"
-            url: "${url}"
-            date: ${date}
-            ${endDate ? 'endDate: ' + endDate : ''}
-            location: "${location.replace(/"/g, '\\"')}"
-            type: "${eventType}"
-            description: "${description.replace(/"/g, '\\"').replace(/\n/g, ' ')}"
-            tags: ${formatTags(tags)}
-            contributor: "${contributor.replace(/"/g, '\\"')}"
-            ---`;
-
-              // Remove empty lines from optional fields
-              frontmatter = fm.replace(/^            /gm, '').replace(/^\s*\n/gm, '');
+              if (errors.length === 0) {
+                const lines = [
+                  '---',
+                  `title: "${yamlSafe(title)}"`,
+                  `url: "${url}"`,
+                  `date: ${date}`,
+                ];
+                if (endDate) lines.push(`endDate: ${endDate}`);
+                lines.push(
+                  `location: "${yamlSafe(location)}"`,
+                  `type: "${normalizedType}"`,
+                  `description: "${yamlSafe(description)}"`,
+                  `tags: ${formatTags(tags)}`,
+                  `contributor: "${yamlSafe(contributor)}"`,
+                  '---'
+                );
+                frontmatter = lines.join('\n');
+              }
 
             } else if (contentType === 'tool') {
               title = parseField(body, 'Tool Name');
-              const url = parseField(body, 'Tool URL');
+              const url = validateUrl(parseField(body, 'Tool URL'));
               const description = parseField(body, 'Description');
               const category = parseField(body, 'Category');
               const tags = parseField(body, 'Tags');
               const contributor = parseField(body, 'Your Name');
 
-              if (!title || !url) {
-                core.setFailed('Missing required fields: Tool Name and Tool URL');
-                return;
-              }
+              if (!title) errors.push('Tool Name is required');
+              if (!url) errors.push('Tool URL is missing or invalid');
+              if (!description) errors.push('Description is required');
 
-              frontmatter = `---
-            title: "${title.replace(/"/g, '\\"')}"
-            url: "${url}"
-            description: "${description.replace(/"/g, '\\"').replace(/\n/g, ' ')}"
-            category: "${category}"
-            tags: ${formatTags(tags)}
-            contributor: "${contributor.replace(/"/g, '\\"')}"
-            ---`.replace(/^            /gm, '');
+              if (errors.length === 0) {
+                frontmatter = [
+                  '---',
+                  `title: "${yamlSafe(title)}"`,
+                  `url: "${url}"`,
+                  `description: "${yamlSafe(description)}"`,
+                  `category: "${yamlSafe(category)}"`,
+                  `tags: ${formatTags(tags)}`,
+                  `contributor: "${yamlSafe(contributor)}"`,
+                  '---'
+                ].join('\n');
+              }
 
             } else if (contentType === 'linkedin') {
               title = parseField(body, 'Post Title');
-              const linkedinUrl = parseField(body, 'LinkedIn Post URL');
+              const linkedinUrl = validateUrl(parseField(body, 'LinkedIn Post URL'));
               const author = parseField(body, 'Post Author');
               const description = parseField(body, 'Description');
               const tags = parseField(body, 'Tags');
               const contributor = parseField(body, 'Your Name');
 
-              if (!title || !linkedinUrl) {
-                core.setFailed('Missing required fields: Post Title and LinkedIn Post URL');
-                return;
+              if (!title) errors.push('Post Title is required');
+              if (!linkedinUrl) errors.push('LinkedIn Post URL is missing or invalid');
+              if (!description) errors.push('Description is required');
+
+              if (errors.length === 0) {
+                frontmatter = [
+                  '---',
+                  `title: "${yamlSafe(title)}"`,
+                  `linkedinUrl: "${linkedinUrl}"`,
+                  `author: "${yamlSafe(author)}"`,
+                  `description: "${yamlSafe(description)}"`,
+                  `tags: ${formatTags(tags)}`,
+                  `contributor: "${yamlSafe(contributor)}"`,
+                  `submittedDate: ${today}`,
+                  '---'
+                ].join('\n');
+              }
+            }
+
+            // Report validation errors back on the issue
+            if (errors.length > 0) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                body: `The submission could not be processed due to the following issues:\n\n${errors.map(e => '- ' + e).join('\n')}\n\nPlease update the issue and a maintainer will re-apply the \`approved\` label.`
+              });
+
+              // Remove the approved label so it can be re-applied after fixes
+              try {
+                await github.rest.issues.removeLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issue.number,
+                  name: 'approved'
+                });
+              } catch (e) {
+                // Label might already be removed
               }
 
-              frontmatter = `---
-            title: "${title.replace(/"/g, '\\"')}"
-            linkedinUrl: "${linkedinUrl}"
-            author: "${author.replace(/"/g, '\\"')}"
-            description: "${description.replace(/"/g, '\\"').replace(/\n/g, ' ')}"
-            tags: ${formatTags(tags)}
-            contributor: "${contributor.replace(/"/g, '\\"')}"
-            submittedDate: ${today}
-            ---`.replace(/^            /gm, '');
+              core.setFailed(`Validation errors: ${errors.join('; ')}`);
+              return;
             }
 
             const slug = toSlug(title);
-            const filePath = `src/content/${contentDir}/${slug}.md`;
+            let filePath = `src/content/${contentDir}/${slug}.md`;
 
-            // Check if file already exists
+            // Handle duplicate filenames by appending a number
             const fs = require('fs');
             if (fs.existsSync(filePath)) {
-              core.setFailed(`File already exists: ${filePath}`);
-              return;
+              let counter = 2;
+              while (fs.existsSync(`src/content/${contentDir}/${slug}-${counter}.md`)) {
+                counter++;
+              }
+              filePath = `src/content/${contentDir}/${slug}-${counter}.md`;
+              console.log(`File existed, using: ${filePath}`);
             }
 
             // Write the file
@@ -254,6 +369,11 @@ jobs:
             console.log('--- Content ---');
             console.log(frontmatter);
 
+      - name: Validate build
+        run: npx astro build
+        env:
+          NODE_ENV: production
+
       - name: Commit and push
         run: |
           git config user.name "github-actions[bot]"
@@ -266,7 +386,8 @@ jobs:
           Co-authored-by: ${{ github.event.issue.user.login }} <${{ github.event.issue.user.id }}+${{ github.event.issue.user.login }}@users.noreply.github.com>"
           git push
 
-      - name: Close issue with comment
+      - name: Close issue with success comment
+        if: success()
         uses: actions/github-script@v7
         with:
           script: |
@@ -288,3 +409,27 @@ jobs:
               state: 'closed',
               state_reason: 'completed'
             });
+
+      - name: Report build failure on issue
+        if: failure() && env.ISSUE_NUMBER != ''
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issueNumber = parseInt(process.env.ISSUE_NUMBER);
+            if (!issueNumber) return;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              body: 'The content was generated but the site build failed. A maintainer will investigate and fix the issue manually. The `approved` label has been removed so it can be re-applied after the fix.'
+            });
+
+            try {
+              await github.rest.issues.removeLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                name: 'approved'
+              });
+            } catch (e) { /* label may not exist */ }
