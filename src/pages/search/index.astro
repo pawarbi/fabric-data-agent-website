@@ -20,6 +20,9 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
       <p class="text-gray-500 dark:text-muted text-lg">Search is available after building the site.</p>
       <p class="mt-2 text-sm text-gray-400 dark:text-muted/60">Run <code class="rounded bg-gray-100 dark:bg-indigo/20 px-2 py-0.5">npm run build</code> first, then <code class="rounded bg-gray-100 dark:bg-indigo/20 px-2 py-0.5">npm run preview</code> to test search locally.</p>
     </div>
+    <div id="search-timeout" class="hidden text-center py-6">
+      <p class="text-amber-600 dark:text-amber-400">Search is taking longer than expected. Try refreshing the page.</p>
+    </div>
     <script is:inline>
       (function loadSearch() {
         var script = document.createElement('script');
@@ -35,14 +38,25 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
             showFilters: true,
           });
 
-          // Track search queries
+          // Show timeout message if search hangs
           var searchInput = document.querySelector('.pagefind-ui__search-input');
           if (searchInput) {
             var searchTimeout;
+            var hangTimeout;
             searchInput.addEventListener('input', function(e) {
               clearTimeout(searchTimeout);
+              clearTimeout(hangTimeout);
+              var timeoutEl = document.getElementById('search-timeout');
+              if (timeoutEl) timeoutEl.classList.add('hidden');
+
               var val = e.target.value;
-              if (val && val.length >= 3) {
+              if (val && val.length >= 2) {
+                hangTimeout = setTimeout(function() {
+                  var msg = document.querySelector('.pagefind-ui__message');
+                  if (msg && msg.textContent && msg.textContent.indexOf('Searching') !== -1) {
+                    if (timeoutEl) timeoutEl.classList.remove('hidden');
+                  }
+                }, 8000);
                 searchTimeout = setTimeout(function() {
                   if (typeof umami !== 'undefined') umami.track('search', { query: val });
                 }, 1000);
