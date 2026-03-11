@@ -11,7 +11,7 @@ const articles = defineCollection({
     submittedDate: z.coerce.date().optional(),
     summary: z.string(),
     tags: z.array(z.string()).default([]),
-    contributor: z.string().default('Sandeep Pawar'),
+    contributor: z.string().default('Community Member'),
   }),
 });
 
@@ -23,7 +23,7 @@ const resources = defineCollection({
     description: z.string(),
     category: z.string(),
     tags: z.array(z.string()).default([]),
-    contributor: z.string().default('Sandeep Pawar'),
+    contributor: z.string().default('Community Member'),
   }),
 });
 
@@ -36,7 +36,7 @@ const videos = defineCollection({
     publishDate: z.coerce.date(),
     description: z.string(),
     tags: z.array(z.string()).default([]),
-    contributor: z.string().default('Sandeep Pawar'),
+    contributor: z.string().default('Community Member'),
   }),
 });
 
@@ -51,7 +51,7 @@ const events = defineCollection({
     type: z.enum(['conference', 'session', 'meetup', 'webinar']),
     description: z.string(),
     tags: z.array(z.string()).default([]),
-    contributor: z.string().default('Sandeep Pawar'),
+    contributor: z.string().default('Community Member'),
   }),
 });
 
@@ -63,7 +63,7 @@ const linkedin = defineCollection({
     author: z.string(),
     description: z.string(),
     tags: z.array(z.string()).default([]),
-    contributor: z.string().default('Sandeep Pawar'),
+    contributor: z.string().default('Community Member'),
     submittedDate: z.coerce.date(),
   }),
 });
@@ -76,7 +76,7 @@ const tools = defineCollection({
     description: z.string(),
     category: z.string(),
     tags: z.array(z.string()).default([]),
-    contributor: z.string().default('Sandeep Pawar'),
+    contributor: z.string().default('Community Member'),
   }),
 });
 
@@ -88,7 +88,7 @@ const learn = defineCollection({
     difficulty: z.enum(['beginner', 'intermediate', 'advanced']),
     estimatedTime: z.string().optional(),
     tags: z.array(z.string()).default([]),
-    contributor: z.string().default('Sandeep Pawar'),
+    contributor: z.string().default('Community Member'),
     items: z.array(z.object({
       title: z.string(),
       type: z.enum(['article', 'video', 'resource', 'tool', 'external']),

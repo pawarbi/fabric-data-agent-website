@@ -21,6 +21,23 @@ allContent.forEach(item => {
 });
 
 const sortedContributors = [...contributorCounts.entries()].sort((a, b) => b[1] - a[1]);
+
+// Aggregate content authors (article/linkedin authors + video speakers)
+const authorCounts = new Map<string, number>();
+articles.forEach(item => {
+  const name = item.data.author;
+  authorCounts.set(name, (authorCounts.get(name) || 0) + 1);
+});
+linkedin.forEach(item => {
+  const name = item.data.author;
+  authorCounts.set(name, (authorCounts.get(name) || 0) + 1);
+});
+videos.forEach(item => {
+  const name = item.data.speaker;
+  authorCounts.set(name, (authorCounts.get(name) || 0) + 1);
+});
+const sortedAuthors = [...authorCounts.entries()].sort((a, b) => b[1] - a[1]);
+
 const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 
 const getBadge = (count: number) => {
@@ -43,6 +60,8 @@ const getInitials = (name: string) => {
   />
 
   <section class="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
+    <h2 class="mb-8 text-2xl font-bold text-gray-900 dark:text-light sm:text-3xl">Contributors</h2>
+    <p class="mb-6 text-gray-500 dark:text-muted">Community members who curate and submit content to the knowledge base.</p>
     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
       {sortedContributors.map(([name, count]) => (
         <a
@@ -62,4 +81,26 @@ const getInitials = (name: string) => {
       ))}
     </div>
   </section>
+
+  {sortedAuthors.length > 0 && (
+    <section class="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
+      <h2 class="mb-8 text-2xl font-bold text-gray-900 dark:text-light sm:text-3xl">Content Authors</h2>
+      <p class="mb-6 text-gray-500 dark:text-muted">Original creators whose articles, videos, and posts are featured in the knowledge base.</p>
+      <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        {sortedAuthors.map(([name, count]) => (
+          <div class="flex flex-col items-center gap-3 rounded-xl border border-gray-200 bg-white p-6 text-center backdrop-blur-sm dark:border-indigo/20 dark:bg-dark/60">
+            <div class="flex h-14 w-14 items-center justify-center rounded-full bg-indigo/10 text-lg font-bold text-indigo dark:bg-indigo/20 dark:text-indigo">
+              {getInitials(name)}
+            </div>
+            <h3 class="text-base font-semibold text-gray-900 dark:text-light">
+              {name}
+            </h3>
+            <p class="text-sm text-gray-500 dark:text-muted">
+              {count} {count !== 1 ? 'pieces' : 'piece'} featured
+            </p>
+          </div>
+        ))}
+      </div>
+    </section>
+  )}
 </BaseLayout>
