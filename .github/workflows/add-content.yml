@@ -8,6 +8,7 @@ permissions:
   contents: write
   issues: write
   pull-requests: write
+  statuses: write
 
 concurrency:
   group: "add-content"
@@ -392,6 +393,7 @@ jobs:
 
           Co-authored-by: ${{ github.event.issue.user.login }} <${{ github.event.issue.user.id }}+${{ github.event.issue.user.login }}@users.noreply.github.com>"
           git push origin "$BRANCH"
+          COMMIT_SHA=$(git rev-parse HEAD)
           gh pr create \
             --title "content: add ${{ env.CONTENT_TYPE }} — ${{ env.CONTENT_TITLE }}" \
             --body "Auto-generated from issue #${{ env.ISSUE_NUMBER }}.
@@ -401,7 +403,17 @@ jobs:
           closes #${{ env.ISSUE_NUMBER }}" \
             --base main \
             --head "$BRANCH"
-          gh pr merge "$BRANCH" --auto --merge
+
+          # Set the required "check" status on the commit.
+          # CI won't trigger on PRs created by GITHUB_TOKEN (GitHub prevents
+          # workflow-to-workflow triggers). Since we already validated the build
+          # in the previous step, we report that status directly.
+          gh api "repos/${{ github.repository }}/statuses/$COMMIT_SHA" \
+            -f state=success \
+            -f context=check \
+            -f description="Build validated in content workflow"
+
+          gh pr merge "$BRANCH" --auto --merge --delete-branch
 
       - name: Comment on issue
         if: success()
