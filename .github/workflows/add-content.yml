@@ -7,6 +7,7 @@ on:
 permissions:
   contents: write
   issues: write
+  pull-requests: write
 
 concurrency:
   group: "add-content"
@@ -374,19 +375,33 @@ jobs:
         env:
           NODE_ENV: production
 
-      - name: Commit and push
+      - name: Create branch, PR, and auto-merge
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          BRANCH="content/issue-${{ env.ISSUE_NUMBER }}"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$BRANCH"
           git add "${{ env.CONTENT_FILE }}"
           git commit -m "content: add ${{ env.CONTENT_TYPE }} — ${{ env.CONTENT_TITLE }}
 
           Auto-generated from issue #${{ env.ISSUE_NUMBER }}
 
           Co-authored-by: ${{ github.event.issue.user.login }} <${{ github.event.issue.user.id }}+${{ github.event.issue.user.login }}@users.noreply.github.com>"
-          git push
+          git push origin "$BRANCH"
+          gh pr create \
+            --title "content: add ${{ env.CONTENT_TYPE }} — ${{ env.CONTENT_TITLE }}" \
+            --body "Auto-generated from issue #${{ env.ISSUE_NUMBER }}.
 
-      - name: Close issue with success comment
+          Adds \`${{ env.CONTENT_FILE }}\` to the site.
+
+          closes #${{ env.ISSUE_NUMBER }}" \
+            --base main \
+            --head "$BRANCH"
+          gh pr merge "$BRANCH" --auto --merge
+
+      - name: Comment on issue
         if: success()
         uses: actions/github-script@v8
         with:
@@ -399,15 +414,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: issueNumber,
-              body: `Your ${contentType} has been added to the site. The content file was created at \`${filePath}\`.\n\nThe site will be updated automatically within a few minutes. Thank you for contributing!`
-            });
-
-            await github.rest.issues.update({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: issueNumber,
-              state: 'closed',
-              state_reason: 'completed'
+              body: `Your ${contentType} submission has been approved! A PR has been created and will be auto-merged once CI passes.\n\nThe content file \`${filePath}\` will be live on the site within a few minutes. Thank you for contributing!`
             });
 
       - name: Report build failure on issue
