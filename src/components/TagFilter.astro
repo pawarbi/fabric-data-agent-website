@@ -54,6 +54,9 @@ const { tags } = Astro.props;
 
         const selectedTag = btn.dataset.tag;
 
+        // Track tag filter
+        if (typeof umami !== 'undefined') umami.track('tag-filter', { tag: selectedTag });
+
         cards.forEach((card) => {
           if (selectedTag === 'all') {
             card.style.display = '';

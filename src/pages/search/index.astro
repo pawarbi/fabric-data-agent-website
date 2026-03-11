@@ -35,6 +35,21 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
             showFilters: true,
           });
 
+          // Track search queries
+          var searchInput = document.querySelector('.pagefind-ui__search-input');
+          if (searchInput) {
+            var searchTimeout;
+            searchInput.addEventListener('input', function(e) {
+              clearTimeout(searchTimeout);
+              var val = e.target.value;
+              if (val && val.length >= 3) {
+                searchTimeout = setTimeout(function() {
+                  if (typeof umami !== 'undefined') umami.track('search', { query: val });
+                }, 1000);
+              }
+            });
+          }
+
           var urlParams = new URLSearchParams(window.location.search);
           var query = urlParams.get('q');
           if (query) {

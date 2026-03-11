@@ -36,3 +36,18 @@ We welcome contributions! Visit the [Contribute](/contribute) page on the site f
 - [Tailwind CSS](https://tailwindcss.com) — Utility-first CSS
 - [Pagefind](https://pagefind.app) — Static search
 - [GitHub Pages](https://pages.github.com) — Hosting & deployment
+- [Umami](https://umami.is) — Privacy-friendly analytics
+
+## 📊 Analytics
+
+This site uses [Umami Cloud](https://cloud.umami.is) for privacy-friendly, cookie-free analytics. To enable:
+
+1. Sign up at https://cloud.umami.is (free tier: 10K events/month)
+2. Add your website and copy the **Website ID**
+3. Create a `.env` file (see `.env.example`):
+   ```
+   PUBLIC_UMAMI_WEBSITE_ID=your-website-id-here
+   ```
+4. Rebuild and deploy — analytics will start collecting automatically
+
+Tracked events: page views, flyout opens, search queries, tag filters, bookmarks, knowledge graph clicks, and external link clicks.

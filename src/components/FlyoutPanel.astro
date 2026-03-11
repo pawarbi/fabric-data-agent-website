@@ -153,12 +153,20 @@ function initFlyout() {
     cta.href = data.url || '#';
     document.getElementById('flyout-cta-text')!.textContent = ctaText[data.type] || 'Open Link';
 
+    // Track external clicks
+    cta.onclick = function() {
+      if (typeof umami !== 'undefined') umami.track('external-click', { url: data.url, title: data.title, type: data.type });
+    };
+
     // Show panel
     panel.classList.remove('translate-x-full');
     panel.classList.add('translate-x-0');
     backdrop.classList.remove('opacity-0', 'pointer-events-none');
     backdrop.classList.add('opacity-100', 'pointer-events-auto');
     document.body.style.overflow = 'hidden';
+
+    // Track flyout open
+    if (typeof umami !== 'undefined') umami.track('flyout-open', { title: data.title, type: data.type });
 
     // Focus trap
     closeBtn?.focus();

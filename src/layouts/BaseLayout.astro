@@ -12,6 +12,8 @@ interface Props {
 
 const { title, description = 'Your intelligent data exploration companion – articles, tools, and resources for Microsoft Fabric Data Agent.' } = Astro.props;
 const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+const umamiId = import.meta.env.PUBLIC_UMAMI_WEBSITE_ID || '';
+const umamiSrc = import.meta.env.PUBLIC_UMAMI_SCRIPT_URL || 'https://cloud.umami.is/script.js';
 ---
 
 <!doctype html>
@@ -44,6 +46,7 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <title>{title}</title>
+    {umamiId && <script defer src={umamiSrc} data-website-id={umamiId}></script>}
   </head>
   <body class="min-h-screen bg-gray-50 font-sans text-gray-900 antialiased dark:bg-darker dark:text-light">
     <!-- Dot grid background pattern -->
@@ -86,6 +89,7 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 
         if (existing >= 0) {
           bookmarks.splice(existing, 1);
+          if (typeof umami !== 'undefined') umami.track('bookmark-remove', { title: btn.dataset.bookmarkTitle, type: btn.dataset.bookmarkType });
         } else {
           bookmarks.push({
             id: id,
@@ -94,6 +98,7 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
             type: btn.dataset.bookmarkType,
             savedAt: new Date().toISOString(),
           });
+          if (typeof umami !== 'undefined') umami.track('bookmark-add', { title: btn.dataset.bookmarkTitle, type: btn.dataset.bookmarkType });
         }
 
         saveBookmarks(bookmarks);

@@ -250,9 +250,12 @@ const graphData = JSON.stringify({ nodes, links });
     // Click handler
     node.on('click', function(event, d) {
       if (d.group === 'tag') {
+        if (typeof umami !== 'undefined') umami.track('graph-click', { node: d.title, type: 'tag' });
         window.location.href = d.url;
         return;
       }
+
+      if (typeof umami !== 'undefined') umami.track('graph-click', { node: d.title, type: d.type });
 
       var flyoutEvent = new CustomEvent('open-flyout', {
         detail: {
