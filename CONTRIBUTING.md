@@ -69,3 +69,15 @@ Open `http://localhost:4321` to verify your content renders correctly.
 ## Questions?
 
 Open an [issue](https://github.com/pawarbi/fabric-data-agent-website/issues) and we'll help you out.
+
+## Branch Protection
+
+All changes to `main` must go through a Pull Request:
+
+1. **CI must pass** — The CI workflow runs type checking and a full build. PRs with failures cannot be merged.
+2. **Review required** — A maintainer must approve the PR before merging.
+3. **No direct pushes** — Direct pushes to `main` are restricted.
+
+> **Note for admin:** Branch protection rules must be configured in GitHub repo **Settings → Branches → Add rule** for `main`. Enable "Require a pull request before merging", "Require status checks to pass", and select the `check` CI job.
+
+See [CONVENTIONS.md](./CONVENTIONS.md) for the full development workflow and coding standards.
