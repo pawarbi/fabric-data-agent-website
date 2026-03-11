@@ -173,6 +173,7 @@ function initFlyout() {
   }
 
   function closeFlyout() {
+    if (!panel || !backdrop) return;
     panel.classList.add('translate-x-full');
     panel.classList.remove('translate-x-0');
     backdrop.classList.add('opacity-0', 'pointer-events-none');

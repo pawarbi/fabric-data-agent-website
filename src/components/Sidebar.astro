@@ -162,6 +162,7 @@ function isActive(href: string): boolean {
     if (isCollapsed) applyCollapsed(true);
 
     function openMobile() {
+      if (!sidebar || !backdrop) return;
       isMobileOpen = true;
       sidebar.classList.remove('-translate-x-full');
       sidebar.classList.add('translate-x-0');
@@ -171,6 +172,7 @@ function isActive(href: string): boolean {
     }
 
     function closeMobile() {
+      if (!sidebar || !backdrop) return;
       isMobileOpen = false;
       sidebar.classList.add('-translate-x-full');
       sidebar.classList.remove('translate-x-0');

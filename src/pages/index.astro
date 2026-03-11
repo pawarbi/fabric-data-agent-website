@@ -38,6 +38,31 @@ const latestLinkedin = allLinkedin
   .sort((a, b) => new Date(b.data.submittedDate).getTime() - new Date(a.data.submittedDate).getTime())
   .slice(0, 3);
 
+interface SectionItem {
+  title: string;
+  description: string;
+  url: string;
+  tags: string[];
+  contributor: string;
+  date?: string;
+}
+
+function toSectionItems(
+  items: { data: Record<string, any> }[],
+  getDescription: (d: any) => string,
+  getUrl: (d: any) => string,
+  dateField?: string,
+): SectionItem[] {
+  return items.map(item => ({
+    title: item.data.title,
+    description: getDescription(item.data),
+    url: getUrl(item.data),
+    tags: item.data.tags,
+    contributor: item.data.contributor,
+    date: dateField && item.data[dateField] ? new Date(item.data[dateField]).toISOString() : undefined,
+  }));
+}
+
 const difficultyColors: Record<string, { bg: string; text: string }> = {
   beginner: { bg: 'bg-green-100 dark:bg-green-900/30', text: 'text-green-700 dark:text-green-400' },
   intermediate: { bg: 'bg-yellow-100 dark:bg-yellow-900/30', text: 'text-yellow-700 dark:text-yellow-400' },
@@ -47,11 +72,11 @@ const difficultyColors: Record<string, { bg: string; text: string }> = {
 const siteUrl = Astro.site?.toString() || 'https://fabricdataagent.com';
 
 const sections = [
-  { key: 'articles', label: 'Articles', href: `${base}articles/`, items: latestArticles, type: 'article' as const, dateField: 'publishDate' },
-  { key: 'videos', label: 'Videos', href: `${base}videos/`, items: latestVideos, type: 'video' as const, dateField: 'publishDate' },
-  { key: 'events', label: 'Events', href: `${base}events/`, items: latestEvents, type: 'event' as const, dateField: 'date' },
-  { key: 'resources', label: 'Resources', href: `${base}resources/`, items: latestResources, type: 'resource' as const, dateField: null },
-  { key: 'tools', label: 'Tools', href: `${base}tools/`, items: latestTools, type: 'tool' as const, dateField: null },
+  { key: 'articles', label: 'Articles', href: `${base}articles/`, items: toSectionItems(latestArticles, d => d.summary, d => d.url, 'publishDate'), type: 'article' as const },
+  { key: 'videos', label: 'Videos', href: `${base}videos/`, items: toSectionItems(latestVideos, d => d.description, d => `https://www.youtube.com/watch?v=${d.youtubeId}`, 'publishDate'), type: 'video' as const },
+  { key: 'events', label: 'Events', href: `${base}events/`, items: toSectionItems(latestEvents, d => d.description, d => d.url, 'date'), type: 'event' as const },
+  { key: 'resources', label: 'Resources', href: `${base}resources/`, items: toSectionItems(latestResources, d => d.description, d => d.url), type: 'resource' as const },
+  { key: 'tools', label: 'Tools', href: `${base}tools/`, items: toSectionItems(latestTools, d => d.description, d => d.url), type: 'tool' as const },
 ];
 ---
 
@@ -195,7 +220,7 @@ const sections = [
   </section>
 
   <!-- ═══════════════════ CONTENT SECTIONS ═══════════════════ -->
-  {sections.map(({ key, label, href, items, type, dateField }) => (
+  {sections.map(({ key, label, href, items, type }) => (
     <section class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8" id={key}>
       <div class="mb-8 flex items-center justify-between">
         <h2 class="text-2xl font-bold text-gray-900 dark:text-light sm:text-3xl">{label}</h2>
@@ -209,13 +234,13 @@ const sections = [
         <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {items.map((item) => (
             <ContentCard
-              title={item.data.title}
-              description={item.data.description ?? item.data.summary ?? ''}
-              url={item.data.url}
-              tags={item.data.tags}
-              contributor={item.data.contributor}
+              title={item.title}
+              description={item.description}
+              url={item.url}
+              tags={item.tags}
+              contributor={item.contributor}
               type={type}
-              date={dateField && item.data[dateField] ? new Date(item.data[dateField]).toISOString() : undefined}
+              date={item.date}
             />
           ))}
         </div>
