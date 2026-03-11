@@ -89,6 +89,7 @@ function initFlyout() {
   if (!backdrop || !panel) return;
 
   function openFlyout(data: Record<string, string>) {
+    if (!panel || !backdrop) return;
     const typeIcons: Record<string, string> = { article: '📄', resource: '📚', video: '🎬', event: '📅', tool: '🔧', linkedin: '💼' };
     const ctaText: Record<string, string> = { article: 'Read Article', resource: 'Open Resource', video: 'Watch on YouTube', event: 'View Event', tool: 'Open Tool', linkedin: 'View on LinkedIn' };
 
