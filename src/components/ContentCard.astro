@@ -64,9 +64,6 @@ const domain = url ? (() => {
           {domain}
         </span>
       )}
-      {formattedDate && (
-        <span class="text-xs text-gray-400 dark:text-muted/60">{formattedDate}</span>
-      )}
       <button
         class="bookmark-btn relative z-10 rounded-lg p-1.5 text-gray-300 dark:text-muted/40 hover:text-accent dark:hover:text-accent transition-colors"
         data-bookmark-id={`${type}-${title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
@@ -85,6 +82,10 @@ const domain = url ? (() => {
       </button>
     </div>
   </div>
+
+  {formattedDate && (
+    <p class="mb-1 text-xs text-gray-400 dark:text-muted/60">{formattedDate}</p>
+  )}
 
   <!-- Title -->
   <h3 data-pagefind-weight="10" class="mb-2 text-lg font-semibold leading-snug text-gray-900 transition-colors duration-300 group-hover:text-teal dark:text-light">
