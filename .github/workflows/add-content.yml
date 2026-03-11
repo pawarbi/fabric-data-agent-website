@@ -382,6 +382,8 @@ jobs:
           BRANCH="content/issue-${{ env.ISSUE_NUMBER }}"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # Clean up any leftover branch from a previous failed run
+          git push origin --delete "$BRANCH" 2>/dev/null || true
           git checkout -b "$BRANCH"
           git add "${{ env.CONTENT_FILE }}"
           git commit -m "content: add ${{ env.CONTENT_TYPE }} — ${{ env.CONTENT_TITLE }}
