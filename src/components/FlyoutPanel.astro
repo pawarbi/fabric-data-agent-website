@@ -89,6 +89,7 @@ function initFlyout() {
   if (!backdrop || !panel) return;
 
   function openFlyout(data: Record<string, string>) {
+    if (!panel || !backdrop) return;
     const typeIcons: Record<string, string> = { article: '📄', resource: '📚', video: '🎬', event: '📅', tool: '🔧', linkedin: '💼' };
     const ctaText: Record<string, string> = { article: 'Read Article', resource: 'Open Resource', video: 'Watch on YouTube', event: 'View Event', tool: 'Open Tool', linkedin: 'View on LinkedIn' };
 
@@ -173,6 +174,7 @@ function initFlyout() {
   }
 
   function closeFlyout() {
+    if (!panel || !backdrop) return;
     panel.classList.add('translate-x-full');
     panel.classList.remove('translate-x-0');
     backdrop.classList.add('opacity-0', 'pointer-events-none');

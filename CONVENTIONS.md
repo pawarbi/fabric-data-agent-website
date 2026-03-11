@@ -26,6 +26,7 @@ Before starting any change, verify:
 
 After every change, verify:
 
+- [ ] `npx astro check` passes with zero errors (TypeScript type checking)
 - [ ] `npm run build` passes with zero errors
 - [ ] No new warnings introduced
 - [ ] No hardcoded secrets, API keys, or credentials in code
@@ -96,9 +97,12 @@ Before adding a new npm package:
 
 ## Testing
 
-- The CI workflow runs `astro check` (TypeScript type checking) and `npm run build` on every PR
-- Locally, always run `npm run build` before pushing
-- For content changes, use `npm run dev` to preview at `http://localhost:4321`
+**MANDATORY: Run `npx astro check` and `npm run build` locally before every commit.** Both must pass with zero errors. Do not rely on CI to catch issues — validate locally first. This applies to all changes, including minor edits, component updates, and content additions.
+
+- `npx astro check` — Runs TypeScript type checking across all `.astro`, `.ts`, and `.tsx` files. Catches null-safety issues, undeclared globals, type mismatches, and more. **Must report 0 errors.**
+- `npm run build` — Full production build including static rendering. Catches runtime template errors, missing imports, and broken references. **Must complete with zero errors.**
+- `npm run dev` — Use for visual preview at `http://localhost:4321` (content and layout changes)
+- The CI workflow runs both `astro check` and `npm run build` on every PR and will block merge on failure
 
 ## Environment Variables
 

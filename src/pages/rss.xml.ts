@@ -11,9 +11,9 @@ export async function GET(context: APIContext) {
     site: context.site!.toString(),
     items: articles.map((article) => ({
       title: article.data.title,
-      description: article.data.description,
+      description: article.data.summary,
       link: `/articles/${article.id}/`,
-      pubDate: article.data.date,
+      pubDate: article.data.publishDate,
     })),
   });
 }
