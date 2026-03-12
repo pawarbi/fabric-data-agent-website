@@ -119,6 +119,55 @@ jobs:
               }
             }
 
+            // Normalize URL for duplicate comparison
+            function normalizeUrl(str) {
+              try {
+                const u = new URL(str.trim());
+                const host = u.hostname.replace(/^www\./, '').toLowerCase();
+                const path = u.pathname.replace(/\/+$/, '');
+                return `${u.protocol}//${host}${path}${u.search}`;
+              } catch {
+                return str.trim().toLowerCase();
+              }
+            }
+
+            // Check if URL already exists in any content file
+            function checkDuplicateUrl(url) {
+              if (!url) return null;
+              const fs = require('fs');
+              const path = require('path');
+              const normalized = normalizeUrl(url);
+              const contentBase = 'src/content';
+
+              function scanDir(dir) {
+                if (!fs.existsSync(dir)) return null;
+                const entries = fs.readdirSync(dir, { withFileTypes: true });
+                for (const entry of entries) {
+                  const fullPath = path.join(dir, entry.name);
+                  if (entry.isDirectory()) {
+                    const found = scanDir(fullPath);
+                    if (found) return found;
+                  } else if (entry.name.endsWith('.md')) {
+                    const content = fs.readFileSync(fullPath, 'utf8');
+                    const fmMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+                    if (!fmMatch) continue;
+                    const fm = fmMatch[1];
+                    const re = /(?:^|\n)\s*(?:url|linkedinUrl):\s*"?([^"\n\r]+)"?/g;
+                    let m;
+                    while ((m = re.exec(fm)) !== null) {
+                      const val = m[1].trim().replace(/"$/, '');
+                      if (normalizeUrl(val) === normalized) {
+                        return fullPath.replace(/\\/g, '/');
+                      }
+                    }
+                  }
+                }
+                return null;
+              }
+
+              return scanDir(contentBase);
+            }
+
             // Extract YouTube video ID from URL or raw ID
             function extractYouTubeId(input) {
               if (!input) return '';
@@ -158,12 +207,10 @@ jobs:
               if (!url) errors.push('Article URL is missing or invalid (must be a full URL starting with http)');
               if (!summary) errors.push('Summary is required');
 
+              const dupFile = checkDuplicateUrl(url);
+              if (dupFile) errors.push(`This URL has already been submitted in \`${dupFile}\``);
+
               if (errors.length === 0) {
-                frontmatter = [
-                  '---',
-                  `title: "${yamlSafe(title)}"`,
-                  `url: "${url}"`,
-                  `author: "${yamlSafe(author)}"`,
                   `publishDate: ${publishDate || today}`,
                   `submittedDate: ${today}`,
                   `summary: "${yamlSafe(summary)}"`,
@@ -213,20 +260,10 @@ jobs:
               if (!url) errors.push('Resource URL is missing or invalid');
               if (!description) errors.push('Description is required');
 
-              if (errors.length === 0) {
-                frontmatter = [
-                  '---',
-                  `title: "${yamlSafe(title)}"`,
-                  `url: "${url}"`,
-                  `description: "${yamlSafe(description)}"`,
-                  `category: "${yamlSafe(category)}"`,
-                  `tags: ${formatTags(tags)}`,
-                  `contributor: "${yamlSafe(contributor)}"`,
-                  '---'
-                ].join('\n');
-              }
+              const dupFile = checkDuplicateUrl(url);
+              if (dupFile) errors.push(`This URL has already been submitted in \`${dupFile}\``);
 
-            } else if (contentType === 'event') {
+              if (errors.length === 0) {
               title = parseField(body, 'Event Title');
               const url = validateUrl(parseField(body, 'Event URL'));
               const date = validateDate(parseField(body, 'Event Date'));
@@ -247,6 +284,9 @@ jobs:
               if (!validTypes.includes(normalizedType)) {
                 errors.push(`Event Type must be one of: ${validTypes.join(', ')}`);
               }
+
+              const dupFile = checkDuplicateUrl(url);
+              if (dupFile) errors.push(`This URL has already been submitted in \`${dupFile}\``);
 
               if (errors.length === 0) {
                 const lines = [
@@ -279,6 +319,9 @@ jobs:
               if (!url) errors.push('Tool URL is missing or invalid');
               if (!description) errors.push('Description is required');
 
+              const dupFile = checkDuplicateUrl(url);
+              if (dupFile) errors.push(`This URL has already been submitted in \`${dupFile}\``);
+
               if (errors.length === 0) {
                 frontmatter = [
                   '---',
@@ -303,6 +346,9 @@ jobs:
               if (!title) errors.push('Post Title is required');
               if (!linkedinUrl) errors.push('LinkedIn Post URL is missing or invalid');
               if (!description) errors.push('Description is required');
+
+              const dupFile = checkDuplicateUrl(linkedinUrl);
+              if (dupFile) errors.push(`This URL has already been submitted in \`${dupFile}\``);
 
               if (errors.length === 0) {
                 frontmatter = [
