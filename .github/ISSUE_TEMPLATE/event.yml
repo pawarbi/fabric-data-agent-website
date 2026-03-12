@@ -1,21 +1,11 @@
 name: Submit an Event
 description: Share an upcoming conference, webinar, meetup, or session about Fabric Data Agents.
-title: "[Event] "
 labels: ["content-submission", "event"]
 body:
   - type: markdown
     attributes:
       value: |
         Thanks for sharing an event with the community. Please fill out the fields below.
-
-  - type: input
-    id: title
-    attributes:
-      label: Event Title
-      description: The name of the event.
-      placeholder: "e.g. Microsoft Fabric Community Conference 2026"
-    validations:
-      required: true
 
   - type: input
     id: url

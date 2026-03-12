@@ -1,21 +1,11 @@
 name: Submit a Tool
 description: Share a tool, library, or utility related to Fabric Data Agents.
-title: "[Tool] "
 labels: ["content-submission", "tool"]
 body:
   - type: markdown
     attributes:
       value: |
         Thanks for sharing a tool with the community. Please fill out the fields below.
-
-  - type: input
-    id: title
-    attributes:
-      label: Tool Name
-      description: The name of the tool or library.
-      placeholder: "e.g. Semantic Link Labs"
-    validations:
-      required: true
 
   - type: input
     id: url
