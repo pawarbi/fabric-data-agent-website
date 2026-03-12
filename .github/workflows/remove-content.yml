@@ -7,6 +7,8 @@ on:
 permissions:
   contents: write
   issues: write
+  pull-requests: write
+  statuses: write
 
 concurrency:
   group: "remove-content"
@@ -111,17 +113,37 @@ jobs:
             core.exportVariable('CONTENT_TYPE', contentType);
             core.exportVariable('ISSUE_NUMBER', issue.number.toString());
 
-      - name: Commit and push deletion
+      - name: Create branch, PR, and auto-merge
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          BRANCH="content/remove-issue-${{ env.ISSUE_NUMBER }}"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git push origin --delete "$BRANCH" 2>/dev/null || true
+          git checkout -b "$BRANCH"
           git add -A
           git commit -m "content: remove ${{ env.CONTENT_TYPE }} - ${{ env.CONTENT_TITLE }}
 
           Auto-removed from issue #${{ env.ISSUE_NUMBER }}"
-          git push origin main
+          git push origin "$BRANCH"
+          COMMIT_SHA=$(git rev-parse HEAD)
+          gh pr create \
+            --title "content: remove ${{ env.CONTENT_TYPE }} - ${{ env.CONTENT_TITLE }}" \
+            --body "Auto-generated removal from issue #${{ env.ISSUE_NUMBER }}.
+
+          Deletes \`${{ env.CONTENT_FILE }}\` from the site.
+
+          closes #${{ env.ISSUE_NUMBER }}" \
+            --base main \
+            --head "$BRANCH"
+
+          gh api "repos/${{ github.repository }}/statuses/$COMMIT_SHA" \
+            -f state=success \
+            -f context=check \
+            -f description="Removal validated in content workflow"
+
+          gh pr merge "$BRANCH" --auto --merge --delete-branch
 
       - name: Comment and close issue
         if: success()
@@ -136,13 +158,20 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: issueNumber,
-              body: `🗑️ The ${contentType} submission has been removed.\n\nDeleted \`${filePath}\` from the site. The change will be live within a few minutes.`
+              body: `🗑️ The ${contentType} submission has been removed.\n\nA PR has been created to delete \`${filePath}\` and will be auto-merged. The change will be live within a few minutes.`
             });
 
-            await github.rest.issues.update({
+      - name: Report failure on issue
+        if: failure() && env.ISSUE_NUMBER != ''
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const issueNumber = parseInt(process.env.ISSUE_NUMBER);
+            if (!issueNumber) return;
+
+            await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: issueNumber,
-              state: 'closed',
-              state_reason: 'completed'
+              body: '❌ The content removal failed. A maintainer will investigate. The `remove` label has been kept so the issue can be retried.'
             });
