@@ -4,12 +4,20 @@ interface Props {
   description?: string;
   url?: string;
   tags?: string[];
-  contributor?: string;
+  author?: string;
   type?: 'article' | 'resource' | 'video' | 'event' | 'tool';
   date?: string;
 }
 
-const { title, description, url, tags = [], contributor, type = 'article', date } = Astro.props;
+const { title, description, url, tags = [], author, type = 'article', date } = Astro.props;
+
+const authorLabels: Record<string, string> = {
+  article: 'Author',
+  video: 'Speaker',
+  resource: 'Creator',
+  tool: 'Creator',
+};
+const authorLabel = authorLabels[type];
 const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 
 const typeIcons: Record<string, string> = {
@@ -47,7 +55,7 @@ const domain = url ? (() => {
   data-flyout-url={url || ''}
   data-flyout-type={type}
   data-flyout-date={formattedDate || ''}
-  data-flyout-contributor={contributor || ''}
+  data-flyout-author={author || ''}
 >
   <!-- Type badge -->
   <div class="mb-3 flex items-center justify-between">
@@ -117,15 +125,13 @@ const domain = url ? (() => {
   <!-- Extra content slot -->
   <slot />
 
-  <!-- Contributor -->
-  {contributor && (
-    <a href={`${base}contributors/${contributor.toLowerCase().replace(/[^a-z0-9]+/g, '-')}/`}
-       class="flex items-center gap-1.5 text-xs text-gray-400 dark:text-muted/60 hover:text-teal transition-colors relative z-10"
-       onclick="event.stopPropagation()">
+  <!-- Author / Speaker / Creator -->
+  {author && authorLabel && (
+    <div class="flex items-center gap-1.5 text-xs text-gray-400 dark:text-muted/60">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
         <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
       </svg>
-      <span>{contributor}</span>
-    </a>
+      <span>{authorLabel}: {author}</span>
+    </div>
   )}
 </div>

@@ -252,6 +252,7 @@ jobs:
 
             } else if (contentType === 'resource') {
               const url = validateUrl(parseField(body, 'Resource URL'));
+              const author = parseField(body, 'Creator / Author');
               const description = parseField(body, 'Description');
               const category = parseField(body, 'Category');
               const tags = parseField(body, 'Tags');
@@ -268,12 +269,13 @@ jobs:
                   '---',
                   `title: "${yamlSafe(title)}"`,
                   `url: "${url}"`,
+                  author ? `author: "${yamlSafe(author)}"` : null,
                   `description: "${yamlSafe(description)}"`,
                   `category: "${yamlSafe(category)}"`,
                   `tags: ${formatTags(tags)}`,
                   `contributor: "${yamlSafe(contributor)}"`,
                   '---'
-                ].join('\n');
+                ].filter(Boolean).join('\n');
               }
 
             } else if (contentType === 'event') {
@@ -320,6 +322,7 @@ jobs:
 
             } else if (contentType === 'tool') {
               const url = validateUrl(parseField(body, 'Tool URL'));
+              const author = parseField(body, 'Creator / Author');
               const description = parseField(body, 'Description');
               const category = parseField(body, 'Category');
               const tags = parseField(body, 'Tags');
@@ -336,12 +339,13 @@ jobs:
                   '---',
                   `title: "${yamlSafe(title)}"`,
                   `url: "${url}"`,
+                  author ? `author: "${yamlSafe(author)}"` : null,
                   `description: "${yamlSafe(description)}"`,
                   `category: "${yamlSafe(category)}"`,
                   `tags: ${formatTags(tags)}`,
                   `contributor: "${yamlSafe(contributor)}"`,
                   '---'
-                ].join('\n');
+                ].filter(Boolean).join('\n');
               }
 
             } else if (contentType === 'linkedin') {

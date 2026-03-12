@@ -14,6 +14,8 @@ Every change, no matter how small, follows this process:
 6. **Review** - CI must pass. Maintainer reviews before merge.
 7. **Deploy** - Merging to `main` triggers automatic deployment to GitHub Pages.
 
+**Important:** Never merge or close PRs automatically. Only the maintainer merges or closes PRs unless explicitly asked to do so.
+
 ## Pre-Change Checklist
 
 Before starting any change, verify:

@@ -45,12 +45,12 @@ const taggedLinkedin = linkedin.filter(l => l.data.tags.includes(tag));
 const totalCount = taggedArticles.length + taggedResources.length + taggedVideos.length + taggedEvents.length + taggedTools.length + taggedLinkedin.length;
 
 const sections = [
-  { title: '📄 Articles', items: taggedArticles, type: 'article' as const, getDesc: (i: any) => i.data.summary, getUrl: (i: any) => i.data.url, getDate: (i: any) => i.data.publishDate },
-  { title: '📚 Resources', items: taggedResources, type: 'resource' as const, getDesc: (i: any) => i.data.description, getUrl: (i: any) => i.data.url, getDate: () => undefined },
-  { title: '🎬 Videos', items: taggedVideos, type: 'video' as const, getDesc: (i: any) => i.data.description, getUrl: (i: any) => `https://www.youtube.com/watch?v=${i.data.youtubeId}`, getDate: (i: any) => i.data.publishDate },
-  { title: '📅 Events', items: taggedEvents, type: 'event' as const, getDesc: (i: any) => i.data.description, getUrl: (i: any) => i.data.url, getDate: (i: any) => i.data.date },
-  { title: '🔧 Tools', items: taggedTools, type: 'tool' as const, getDesc: (i: any) => i.data.description, getUrl: (i: any) => i.data.url, getDate: () => undefined },
-  { title: '💼 LinkedIn Posts', items: taggedLinkedin, type: 'article' as const, getDesc: (i: any) => i.data.description, getUrl: (i: any) => i.data.linkedinUrl, getDate: (i: any) => i.data.submittedDate },
+  { title: '📄 Articles', items: taggedArticles, type: 'article' as const, getDesc: (i: any) => i.data.summary, getUrl: (i: any) => i.data.url, getDate: (i: any) => i.data.publishDate, getAuthor: (i: any) => i.data.author },
+  { title: '📚 Resources', items: taggedResources, type: 'resource' as const, getDesc: (i: any) => i.data.description, getUrl: (i: any) => i.data.url, getDate: () => undefined, getAuthor: (i: any) => i.data.author },
+  { title: '🎬 Videos', items: taggedVideos, type: 'video' as const, getDesc: (i: any) => i.data.description, getUrl: (i: any) => `https://www.youtube.com/watch?v=${i.data.youtubeId}`, getDate: (i: any) => i.data.publishDate, getAuthor: (i: any) => i.data.speaker },
+  { title: '📅 Events', items: taggedEvents, type: 'event' as const, getDesc: (i: any) => i.data.description, getUrl: (i: any) => i.data.url, getDate: (i: any) => i.data.date, getAuthor: () => undefined },
+  { title: '🔧 Tools', items: taggedTools, type: 'tool' as const, getDesc: (i: any) => i.data.description, getUrl: (i: any) => i.data.url, getDate: () => undefined, getAuthor: (i: any) => i.data.author },
+  { title: '💼 LinkedIn Posts', items: taggedLinkedin, type: 'article' as const, getDesc: (i: any) => i.data.description, getUrl: (i: any) => i.data.linkedinUrl, getDate: (i: any) => i.data.submittedDate, getAuthor: (i: any) => i.data.author },
 ];
 ---
 
@@ -68,7 +68,7 @@ const sections = [
       </a>
     </div>
 
-    {sections.map(({ title, items, type, getDesc, getUrl, getDate }) =>
+    {sections.map(({ title, items, type, getDesc, getUrl, getDate, getAuthor }) =>
       items.length > 0 && (
         <div class="mb-12">
           <h2 class="mb-6 text-xl font-bold text-gray-900 dark:text-light">{title}</h2>
@@ -79,7 +79,7 @@ const sections = [
                 description={getDesc(item)}
                 url={getUrl(item)}
                 tags={item.data.tags}
-                contributor={item.data.contributor}
+                author={getAuthor(item)}
                 type={type}
                 date={getDate(item) ? new Date(getDate(item)).toLocaleDateString() : undefined}
               />

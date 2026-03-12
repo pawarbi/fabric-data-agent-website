@@ -38,17 +38,10 @@ const allTags = [...new Set(articles.flatMap((a) => a.data.tags))].sort();
             description={article.data.summary}
             url={article.data.url}
             tags={article.data.tags}
-            contributor={article.data.contributor}
+            author={article.data.author}
             type="article"
             date={new Date(article.data.publishDate).toLocaleDateString()}
-          >
-            {(article.data.submittedDate || article.data.publishDate) && (
-              <div class="mt-2 space-y-0.5 text-xs text-gray-400 dark:text-muted/60">
-                <p>Published: {new Date(article.data.publishDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</p>
-                <p>Submitted: {new Date(article.data.submittedDate ?? article.data.publishDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</p>
-              </div>
-            )}
-          </ContentCard>
+          />
         ))}
       </div>
     ) : (
