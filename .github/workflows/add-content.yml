@@ -211,6 +211,11 @@ jobs:
               if (dupFile) errors.push(`This URL has already been submitted in \`${dupFile}\``);
 
               if (errors.length === 0) {
+                frontmatter = [
+                  '---',
+                  `title: "${yamlSafe(title)}"`,
+                  `url: "${url}"`,
+                  `author: "${yamlSafe(author)}"`,
                   `publishDate: ${publishDate || today}`,
                   `submittedDate: ${today}`,
                   `summary: "${yamlSafe(summary)}"`,
@@ -264,6 +269,19 @@ jobs:
               if (dupFile) errors.push(`This URL has already been submitted in \`${dupFile}\``);
 
               if (errors.length === 0) {
+                frontmatter = [
+                  '---',
+                  `title: "${yamlSafe(title)}"`,
+                  `url: "${url}"`,
+                  `description: "${yamlSafe(description)}"`,
+                  `category: "${yamlSafe(category)}"`,
+                  `tags: ${formatTags(tags)}`,
+                  `contributor: "${yamlSafe(contributor)}"`,
+                  '---'
+                ].join('\n');
+              }
+
+            } else if (contentType === 'event') {
               title = parseField(body, 'Event Title');
               const url = validateUrl(parseField(body, 'Event URL'));
               const date = validateDate(parseField(body, 'Event Date'));
