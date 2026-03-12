@@ -142,19 +142,272 @@ const sections = [
     </div>
   </section>
 
-  <!-- ═══════════════════ EXPLAINER SECTION ═══════════════════ -->
-  <section class="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8 text-center">
-    <h2 class="text-2xl font-bold text-gray-900 dark:text-light mb-4">What is a Fabric Data Agent?</h2>
-    <p class="text-base leading-relaxed text-gray-600 dark:text-muted max-w-3xl mx-auto">
-      Microsoft Fabric Data Agents are AI-powered assistants that connect to your data in Microsoft Fabric
-      and answer questions using natural language. You bring your domain expertise and business context;
-      the agent turns that knowledge into reliable, on-demand answers for your team. Explore the tools
-      and resources here to build data agents you can rely on.
-    </p>
-    <a href={`${base}learn/get-started/`} class="inline-flex items-center gap-2 mt-6 text-sm font-medium text-teal hover:text-tealDark transition-colors">
-      Learn more about Fabric Data Agents →
-    </a>
+  <!-- ═══════════════════ CHAT-STYLE EXPLAINER ═══════════════════ -->
+  <section class="mx-auto max-w-3xl px-4 py-4 sm:px-6 lg:px-8">
+    <h2 class="text-2xl font-bold text-gray-900 dark:text-light mb-6 text-center">What is a Fabric Data Agent?</h2>
+
+    <!-- Chat Window -->
+    <div class="rounded-2xl border border-gray-200 dark:border-indigo/20 bg-white dark:bg-dark/60 shadow-lg overflow-hidden">
+
+      <!-- Chat Header -->
+      <div class="flex items-center gap-3 border-b border-gray-100 dark:border-indigo/10 px-5 py-3 bg-gray-50/80 dark:bg-dark/40">
+        <div class="flex h-8 w-8 items-center justify-center rounded-full bg-teal/10">
+          <svg class="h-4 w-4 text-teal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456z" />
+          </svg>
+        </div>
+        <div>
+          <div class="text-sm font-semibold text-gray-900 dark:text-light">Agent</div>
+          <div class="text-xs text-teal">Online</div>
+        </div>
+      </div>
+
+      <!-- Chat Messages (scrollable) -->
+      <div class="space-y-4 px-5 py-5 max-h-[340px] overflow-y-auto scroll-smooth" id="chat-messages">
+
+        <!-- User Q1 -->
+        <div class="chat-msg flex justify-end">
+          <div class="max-w-[80%] rounded-2xl rounded-br-md bg-gray-100 dark:bg-indigo/15 px-4 py-2.5 text-sm text-gray-800 dark:text-light/90">
+            What is a Fabric Data Agent?
+          </div>
+        </div>
+
+        <!-- Agent A1 -->
+        <div class="chat-msg flex items-start gap-2.5">
+          <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-teal/10 mt-0.5">
+            <svg class="h-3.5 w-3.5 text-teal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+            </svg>
+          </div>
+          <div class="stream-text max-w-[80%] rounded-2xl rounded-bl-md border-l-2 border-teal/40 bg-gray-50 dark:bg-dark/40 px-4 py-2.5 text-sm text-gray-700 dark:text-muted">
+            It's an AI-powered feature in Microsoft Fabric that lets anyone ask questions about their data in OneLake using plain English. It generates and runs queries for you automatically - no SQL, DAX, or KQL needed!
+          </div>
+        </div>
+
+        <!-- User Q2 -->
+        <div class="chat-msg flex justify-end">
+          <div class="max-w-[80%] rounded-2xl rounded-br-md bg-gray-100 dark:bg-indigo/15 px-4 py-2.5 text-sm text-gray-800 dark:text-light/90">
+            How is it different from Copilot?
+          </div>
+        </div>
+
+        <!-- Agent A2 -->
+        <div class="chat-msg flex items-start gap-2.5">
+          <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-teal/10 mt-0.5">
+            <svg class="h-3.5 w-3.5 text-teal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+            </svg>
+          </div>
+          <div class="stream-text max-w-[80%] rounded-2xl rounded-bl-md border-l-2 border-teal/40 bg-gray-50 dark:bg-dark/40 px-4 py-2.5 text-sm text-gray-700 dark:text-muted">
+            Great question! A Data Agent is a standalone, customizable conversational AI system that supports many data sources in OneLake. As a domain expert, you configure it with the right business context, validate it, and integrate it with Microsoft Teams, Copilot Studio, or Foundry for use outside Fabric.
+          </div>
+        </div>
+
+        <!-- User Q3 -->
+        <div class="chat-msg flex justify-end">
+          <div class="max-w-[80%] rounded-2xl rounded-br-md bg-gray-100 dark:bg-indigo/15 px-4 py-2.5 text-sm text-gray-800 dark:text-light/90">
+            How do I get started?
+          </div>
+        </div>
+
+        <!-- Agent A3 -->
+        <div class="chat-msg flex items-start gap-2.5">
+          <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-teal/10 mt-0.5">
+            <svg class="h-3.5 w-3.5 text-teal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+            </svg>
+          </div>
+          <div class="stream-text max-w-[80%] rounded-2xl rounded-bl-md border-l-2 border-teal/40 bg-gray-50 dark:bg-dark/40 px-4 py-2.5 text-sm text-gray-700 dark:text-muted">
+            Start with the <a href="https://learn.microsoft.com/en-us/fabric/data-science/concept-data-agent" target="_blank" rel="noopener" class="text-teal hover:text-tealDark font-medium">Microsoft Documentation</a> to understand the concepts, then check out our <a href={`${base}learn/get-started/`} class="text-teal hover:text-tealDark font-medium">Learning Paths</a> to go from zero to your first agent!
+          </div>
+        </div>
+
+        <!-- User Q4 -->
+        <div class="chat-msg flex justify-end">
+          <div class="max-w-[80%] rounded-2xl rounded-br-md bg-gray-100 dark:bg-indigo/15 px-4 py-2.5 text-sm text-gray-800 dark:text-light/90">
+            Sounds good, I want to build a Data Agent!
+          </div>
+        </div>
+
+        <!-- Agent A4 -->
+        <div class="chat-msg flex items-start gap-2.5">
+          <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-teal/10 mt-0.5">
+            <svg class="h-3.5 w-3.5 text-teal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+            </svg>
+          </div>
+          <div class="stream-text max-w-[80%] rounded-2xl rounded-bl-md border-l-2 border-teal/40 bg-gray-50 dark:bg-dark/40 px-4 py-2.5 text-sm text-gray-700 dark:text-muted">
+            You're in the right place! Start with our <a href={`${base}learn/get-started/`} class="text-teal hover:text-tealDark font-medium">Beginner Learning Path</a> - it walks you through everything step by step, from setting up your workspace to asking your first question.
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Input Bar (decorative) -->
+      <div class="border-t border-gray-100 dark:border-indigo/10 px-5 py-3 bg-gray-50/50 dark:bg-dark/30">
+        <div class="flex items-center gap-3 rounded-xl border border-gray-200 dark:border-indigo/15 bg-white dark:bg-dark/40 px-4 py-2.5">
+          <span class="text-sm text-gray-400 dark:text-muted/50 flex-1">Ask your question...</span>
+          <svg class="h-5 w-5 text-teal/50" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M3.478 2.404a.75.75 0 00-.926.941l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.404z" />
+          </svg>
+        </div>
+      </div>
+
+    </div>
   </section>
+
+  <style>
+    .chat-msg {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    .chat-msg.chat-show {
+      animation: chatFadeIn 0.4s ease-out forwards;
+    }
+    @keyframes chatFadeIn {
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .typing-dots {
+      display: inline-flex;
+      gap: 4px;
+      align-items: center;
+      height: 1.2em;
+    }
+    .typing-dots span {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+      opacity: 0.3;
+      animation: dotBounce 1.4s ease-in-out infinite;
+    }
+    .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes dotBounce {
+      0%, 80%, 100% { opacity: 0.2; transform: translateY(0); }
+      40% { opacity: 0.6; transform: translateY(-4px); }
+    }
+    .stream-cursor {
+      display: inline;
+      font-weight: 400;
+      opacity: 0.7;
+      animation: cursorBlink 0.53s step-end infinite;
+      color: var(--color-teal);
+    }
+    @keyframes cursorBlink {
+      0%, 100% { opacity: 0.7; }
+      50% { opacity: 0; }
+    }
+  </style>
+
+  <script>
+    function initChatStream() {
+      const container = document.getElementById('chat-messages');
+      if (!container) return;
+      const chatBox = container;
+
+      const messages = Array.from(chatBox.querySelectorAll('.chat-msg')) as HTMLElement[];
+      if (messages.length === 0) return;
+
+      // Reset all messages - hide so they don't take up space
+      messages.forEach(msg => {
+        msg.classList.remove('chat-show');
+        msg.style.display = 'none';
+      });
+
+      // Store original HTML for stream-text elements
+      messages.forEach(msg => {
+        const st = msg.querySelector('.stream-text');
+        if (st) {
+          if (!st.hasAttribute('data-original')) {
+            st.setAttribute('data-original', st.innerHTML.trim());
+          }
+          st.innerHTML = '';
+        }
+      });
+
+      let started = false;
+
+      function showMessage(index: number) {
+        if (index >= messages.length) return;
+
+        const msg = messages[index];
+        const streamEl = msg.querySelector('.stream-text') as HTMLElement | null;
+
+        // Reveal and animate in
+        msg.style.display = '';
+        msg.classList.add('chat-show');
+
+        // Scroll to keep current message visible
+        requestAnimationFrame(() => {
+          msg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        });
+
+        if (streamEl&& streamEl.hasAttribute('data-original')) {
+          // Agent message: show typing dots, then stream text
+          const el = streamEl;
+          el.innerHTML = '<span class="typing-dots"><span></span><span></span><span></span></span>';
+
+          msg.addEventListener('animationend', () => {
+            setTimeout(() => {
+              const html = el.getAttribute('data-original') || '';
+              el.innerHTML = '';
+              let i = 0;
+
+              function typeChar() {
+                if (i >= html.length) {
+                  el.innerHTML = html;
+                  setTimeout(() => showMessage(index + 1), 300);
+                  return;
+                }
+
+                // Skip over HTML tags atomically
+                if (html[i] === '<') {
+                  const closeIdx = html.indexOf('>', i);
+                  if (closeIdx !== -1) i = closeIdx + 1;
+                  else i++;
+                } else {
+                  i++;
+                }
+
+                el.innerHTML = html.substring(0, i) + '<span class="stream-cursor">\u258C</span>';
+                // Scroll on word boundaries to stay smooth
+                if (html[i - 1] === ' ') {
+                  msg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+                const delay = html[i - 1] === ' ' ? 25 : 10;
+                setTimeout(typeChar, delay);
+              }
+
+              typeChar();
+            }, 300);
+          }, { once: true });
+        } else {
+          // User message: fade in then show next
+          msg.addEventListener('animationend', () => {
+            setTimeout(() => showMessage(index + 1), 450);
+          }, { once: true });
+        }
+      }
+
+      // Trigger when chat section scrolls into view
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting && !started) {
+            started = true;
+            observer.disconnect();
+            setTimeout(() => showMessage(0), 300);
+          }
+        });
+      }, { threshold: 0.15 });
+
+      observer.observe(chatBox);
+    }
+
+    // Run on initial load and after View Transitions
+    initChatStream();
+    document.addEventListener('astro:after-swap', initChatStream);
+  </script>
 
   <!-- ═══════════════════ START HERE BANNER ═══════════════════ -->
   <section class="mx-auto max-w-7xl px-4 pb-8 sm:px-6 lg:px-8">
