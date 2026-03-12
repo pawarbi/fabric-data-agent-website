@@ -47,6 +47,7 @@ const umamiSrc = import.meta.env.PUBLIC_UMAMI_SCRIPT_URL || 'https://cloud.umami
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <title>{title}</title>
+    <link rel="help" type="text/plain" href="/llms.txt" title="LLM-friendly site content" />
     {umamiId && <script defer src={umamiSrc} data-website-id={umamiId}></script>}
   </head>
   <body class="min-h-screen bg-gray-50 font-sans text-gray-900 antialiased dark:bg-darker dark:text-light">

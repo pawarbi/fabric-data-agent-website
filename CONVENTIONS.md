@@ -113,3 +113,7 @@ Before adding a new npm package:
 | `PUBLIC_UMAMI_SCRIPT_URL` | Umami script URL | No (defaults to cloud.umami.is) |
 
 Add new env vars to `.env.example` with documentation.
+
+## LLM-Friendly Content (llms.txt)
+
+The files `llms.txt` and `llms-full.txt` are **auto-generated at build time** from the content collections. Do not edit them manually. They are created by `src/pages/llms.txt.ts` and `src/pages/llms-full.txt.ts`. Any new content added to the site is automatically included on the next build.
