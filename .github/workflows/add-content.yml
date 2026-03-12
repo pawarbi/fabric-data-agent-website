@@ -387,7 +387,7 @@ jobs:
           git push origin --delete "$BRANCH" 2>/dev/null || true
           git checkout -b "$BRANCH"
           git add "${{ env.CONTENT_FILE }}"
-          git commit -m "content: add ${{ env.CONTENT_TYPE }} — ${{ env.CONTENT_TITLE }}
+          git commit -m "content: add ${{ env.CONTENT_TYPE }} - ${{ env.CONTENT_TITLE }}
 
           Auto-generated from issue #${{ env.ISSUE_NUMBER }}
 
@@ -395,7 +395,7 @@ jobs:
           git push origin "$BRANCH"
           COMMIT_SHA=$(git rev-parse HEAD)
           gh pr create \
-            --title "content: add ${{ env.CONTENT_TYPE }} — ${{ env.CONTENT_TITLE }}" \
+            --title "content: add ${{ env.CONTENT_TYPE }} - ${{ env.CONTENT_TITLE }}" \
             --body "Auto-generated from issue #${{ env.ISSUE_NUMBER }}.
 
           Adds \`${{ env.CONTENT_FILE }}\` to the site.

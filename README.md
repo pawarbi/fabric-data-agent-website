@@ -32,11 +32,11 @@ We welcome contributions! Visit the [Contribute](/contribute) page on the site f
 
 ## 🛠️ Tech Stack
 
-- [Astro](https://astro.build) — Static site framework
-- [Tailwind CSS](https://tailwindcss.com) — Utility-first CSS
-- [Pagefind](https://pagefind.app) — Static search
-- [GitHub Pages](https://pages.github.com) — Hosting & deployment
-- [Umami](https://umami.is) — Privacy-friendly analytics
+- [Astro](https://astro.build) - Static site framework
+- [Tailwind CSS](https://tailwindcss.com) - Utility-first CSS
+- [Pagefind](https://pagefind.app) - Static search
+- [GitHub Pages](https://pages.github.com) - Hosting & deployment
+- [Umami](https://umami.is) - Privacy-friendly analytics
 
 ## 📊 Analytics
 
@@ -48,6 +48,6 @@ This site uses [Umami Cloud](https://cloud.umami.is) for privacy-friendly, cooki
    ```
    PUBLIC_UMAMI_WEBSITE_ID=your-website-id-here
    ```
-4. Rebuild and deploy — analytics will start collecting automatically
+4. Rebuild and deploy - analytics will start collecting automatically
 
 Tracked events: page views, flyout opens, search queries, tag filters, bookmarks, knowledge graph clicks, and external link clicks.

@@ -4,7 +4,7 @@ Thank you for helping grow the Fabric Data Agent community. This guide explains 
 
 ## Quick Start: Submit via GitHub Issue
 
-The easiest way to contribute is through our **submission forms** — no Git or coding knowledge required.
+The easiest way to contribute is through our **submission forms** - no Git or coding knowledge required.
 
 1. Go to [New Issue](https://github.com/pawarbi/fabric-data-agent-website/issues/new/choose)
 2. Choose the type of content you want to submit (Article, Video, Resource, Event, Tool, or LinkedIn Post)
@@ -74,9 +74,9 @@ Open an [issue](https://github.com/pawarbi/fabric-data-agent-website/issues) and
 
 All changes to `main` must go through a Pull Request:
 
-1. **CI must pass** — The CI workflow runs type checking and a full build. PRs with failures cannot be merged.
-2. **Review required** — A maintainer must approve the PR before merging.
-3. **No direct pushes** — Direct pushes to `main` are restricted.
+1. **CI must pass** - The CI workflow runs type checking and a full build. PRs with failures cannot be merged.
+2. **Review required** - A maintainer must approve the PR before merging.
+3. **No direct pushes** - Direct pushes to `main` are restricted.
 
 > **Note for admin:** Branch protection rules must be configured in GitHub repo **Settings → Branches → Add rule** for `main`. Enable "Require a pull request before merging", "Require status checks to pass", and select the `check` CI job.
 

@@ -25,7 +25,7 @@ If you discover a security vulnerability in this project, please report it respo
 
 ### Scope
 
-This policy covers the website codebase and its deployment infrastructure. It does not cover third-party services (GitHub Pages, Umami Cloud, etc.) — report those to the respective providers.
+This policy covers the website codebase and its deployment infrastructure. It does not cover third-party services (GitHub Pages, Umami Cloud, etc.) - report those to the respective providers.
 
 ## Supported Versions
 
