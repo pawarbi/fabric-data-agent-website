@@ -4,15 +4,15 @@ This file defines the development workflow, coding standards, and quality gates 
 
 ## Development Workflow
 
-Every change — no matter how small — follows this process:
+Every change, no matter how small, follows this process:
 
-1. **Branch** — Create a feature branch from `main` (`add/feature-name` or `fix/bug-name`)
-2. **Implement** — Make changes incrementally, one logical change at a time
-3. **Verify** — Run `npm run build` locally before committing. Build must pass with zero errors.
-4. **Commit** — Use conventional commit messages (see below). One concern per commit.
-5. **Push & PR** — Open a Pull Request against `main`. CI workflow runs automatically.
-6. **Review** — CI must pass. Maintainer reviews before merge.
-7. **Deploy** — Merging to `main` triggers automatic deployment to GitHub Pages.
+1. **Branch** - Create a feature branch from `main` (`add/feature-name` or `fix/bug-name`)
+2. **Implement** - Make changes incrementally, one logical change at a time
+3. **Verify** - Run `npm run build` locally before committing. Build must pass with zero errors.
+4. **Commit** - Use conventional commit messages (see below). One concern per commit.
+5. **Push & PR** - Open a Pull Request against `main`. CI workflow runs automatically.
+6. **Review** - CI must pass. Maintainer reviews before merge.
+7. **Deploy** - Merging to `main` triggers automatic deployment to GitHub Pages.
 
 ## Pre-Change Checklist
 
@@ -53,11 +53,11 @@ Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
 ## Security Rules
 
 **MUST follow:**
-- Never commit `.env` files — they are gitignored
+- Never commit `.env` files - they are gitignored
 - Never hardcode passwords, API keys, tokens, or secrets
 - Use `PUBLIC_` prefixed env vars only for values safe to expose in client-side code
 - External scripts must be loaded from trusted sources only
-- Content Security Policy (CSP) is configured — update it if adding new external script sources
+- Content Security Policy (CSP) is configured - update it if adding new external script sources
 - Report vulnerabilities privately via GitHub Security Advisories (see SECURITY.md)
 
 ## File Organization
@@ -86,6 +86,7 @@ Each collection has a Zod schema defined in `src/content.config.ts`. New content
 - **CSS:** Tailwind utility classes preferred; custom CSS only when Tailwind cannot achieve the desired result
 - **Scripts:** Use `is:inline` for scripts that need to run before hydration (e.g., theme toggle). Use standard `<script>` for everything else.
 - **Comments:** Only add comments that explain *why*, not *what*. Code should be self-explanatory.
+- **No em dashes:** Never use em dashes (`—`) anywhere in code, config, commit messages, or documentation. Use regular hyphens (`-`) or rewrite the sentence instead.
 
 ## Adding External Dependencies
 
@@ -97,11 +98,11 @@ Before adding a new npm package:
 
 ## Testing
 
-**MANDATORY: Run `npx astro check` and `npm run build` locally before every commit.** Both must pass with zero errors. Do not rely on CI to catch issues — validate locally first. This applies to all changes, including minor edits, component updates, and content additions.
+**MANDATORY: Run `npx astro check` and `npm run build` locally before every commit.** Both must pass with zero errors. Do not rely on CI to catch issues - validate locally first. This applies to all changes, including minor edits, component updates, and content additions.
 
-- `npx astro check` — Runs TypeScript type checking across all `.astro`, `.ts`, and `.tsx` files. Catches null-safety issues, undeclared globals, type mismatches, and more. **Must report 0 errors.**
-- `npm run build` — Full production build including static rendering. Catches runtime template errors, missing imports, and broken references. **Must complete with zero errors.**
-- `npm run dev` — Use for visual preview at `http://localhost:4321` (content and layout changes)
+- `npx astro check` - Runs TypeScript type checking across all `.astro`, `.ts`, and `.tsx` files. Catches null-safety issues, undeclared globals, type mismatches, and more. **Must report 0 errors.**
+- `npm run build` - Full production build including static rendering. Catches runtime template errors, missing imports, and broken references. **Must complete with zero errors.**
+- `npm run dev` - Use for visual preview at `http://localhost:4321` (content and layout changes)
 - The CI workflow runs both `astro check` and `npm run build` on every PR and will block merge on failure
 
 ## Environment Variables
