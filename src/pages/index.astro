@@ -162,8 +162,9 @@ const sections = [
         </div>
       </div>
 
-      <!-- Chat Messages (scrollable) -->
-      <div class="space-y-4 px-5 py-5 max-h-[340px] overflow-y-auto scroll-smooth" id="chat-messages">
+      <!-- Chat Messages (fixed-height, bottom-anchored) -->
+      <div class="h-[300px] sm:h-[340px] overflow-y-auto scroll-smooth" id="chat-messages">
+        <div class="flex min-h-full flex-col justify-end space-y-4 px-5 py-5" id="chat-messages-inner">
 
         <!-- User Q1 -->
         <div class="chat-msg flex justify-end">
@@ -241,6 +242,7 @@ const sections = [
           </div>
         </div>
 
+        </div>
       </div>
 
       <!-- Input Bar (decorative) -->
@@ -304,10 +306,16 @@ const sections = [
     function initChatStream() {
       const container = document.getElementById('chat-messages');
       if (!container) return;
-      const chatBox = container;
 
-      const messages = Array.from(chatBox.querySelectorAll('.chat-msg')) as HTMLElement[];
+      const messages = Array.from(container.querySelectorAll('.chat-msg')) as HTMLElement[];
       if (messages.length === 0) return;
+
+      // Auto-scroll container to bottom
+      function scrollToBottom() {
+        requestAnimationFrame(() => {
+          container!.scrollTop = container!.scrollHeight;
+        });
+      }
 
       // Reset all messages - hide so they don't take up space
       messages.forEach(msg => {
@@ -338,10 +346,8 @@ const sections = [
         msg.style.display = '';
         msg.classList.add('chat-show');
 
-        // Scroll to keep current message visible
-        requestAnimationFrame(() => {
-          msg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        });
+        // Scroll to keep latest message visible
+        scrollToBottom();
 
         if (streamEl&& streamEl.hasAttribute('data-original')) {
           // Agent message: show typing dots, then stream text
@@ -371,9 +377,8 @@ const sections = [
                 }
 
                 el.innerHTML = html.substring(0, i) + '<span class="stream-cursor">\u258C</span>';
-                // Scroll on word boundaries to stay smooth
                 if (html[i - 1] === ' ') {
-                  msg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                  scrollToBottom();
                 }
                 const delay = html[i - 1] === ' ' ? 25 : 10;
                 setTimeout(typeChar, delay);
@@ -401,7 +406,7 @@ const sections = [
         });
       }, { threshold: 0.15 });
 
-      observer.observe(chatBox);
+      observer.observe(container);
     }
 
     // Run on initial load and after View Transitions
