@@ -3,6 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import ContentCard from '../components/ContentCard.astro';
 import JsonLd from '../components/JsonLd.astro';
 import { getCollection } from 'astro:content';
+import { marked } from 'marked';
 
 // Fetch all collections
 const allArticles = await getCollection('articles');
@@ -476,7 +477,7 @@ const sections = [
                 <span class={`inline-block rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize ${c.bg} ${c.text}`}>{path.data.difficulty}</span>
               </div>
               <h3 class="mb-2 text-lg font-semibold text-gray-900 dark:text-light group-hover:text-teal transition-colors">{path.data.title}</h3>
-              <p class="mb-4 text-sm leading-relaxed text-gray-500 dark:text-muted line-clamp-3">{path.data.description}</p>
+              <p class="mb-4 text-sm leading-relaxed text-gray-500 dark:text-muted line-clamp-3" set:html={marked.parseInline(path.data.description)} />
               <div class="flex items-center gap-4 text-xs text-gray-400 dark:text-muted/60">
                 <span class="inline-flex items-center gap-1">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>
@@ -572,7 +573,7 @@ const sections = [
                 <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
               </svg>
             </h3>
-            <p class="mb-4 text-sm leading-relaxed text-gray-500 dark:text-muted line-clamp-3">{post.data.description}</p>
+            <p class="mb-4 text-sm leading-relaxed text-gray-500 dark:text-muted line-clamp-3" set:html={marked.parseInline(post.data.description)} />
             {post.data.tags.length > 0 && (
               <div class="mb-3 flex flex-wrap gap-1.5">
                 {post.data.tags.map((tag: string) => (

@@ -9,10 +9,11 @@ Every change, no matter how small, follows this process:
 1. **Branch** - Create a feature branch from `main` (`add/feature-name` or `fix/bug-name`)
 2. **Implement** - Make changes incrementally, one logical change at a time
 3. **Verify** - Run `npm run build` locally before committing. Build must pass with zero errors.
-4. **Commit** - Use conventional commit messages (see below). One concern per commit.
-5. **Push & PR** - Open a Pull Request against `main`. CI workflow runs automatically.
-6. **Review** - CI must pass. Maintainer reviews before merge.
-7. **Deploy** - Merging to `main` triggers automatic deployment to GitHub Pages.
+4. **Local Review** - Start the dev server (`npm run dev`) and let the maintainer review changes in the browser before creating a PR.
+5. **Commit** - Use conventional commit messages (see below). One concern per commit.
+6. **Push & PR** - Open a Pull Request against `main` only after the maintainer has reviewed locally. CI workflow runs automatically.
+7. **Review** - CI must pass. Maintainer reviews before merge.
+8. **Deploy** - Merging to `main` triggers automatic deployment to GitHub Pages.
 
 **Important:** Never merge or close PRs automatically. Only the maintainer merges or closes PRs unless explicitly asked to do so.
 

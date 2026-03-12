@@ -1,4 +1,6 @@
 ---
+import { marked } from 'marked';
+
 interface Props {
   title: string;
   description?: string;
@@ -107,7 +109,7 @@ const domain = url ? (() => {
 
   <!-- Description -->
   {description && (
-    <p class="mb-4 text-sm leading-relaxed text-gray-500 line-clamp-3 dark:text-muted">{description}</p>
+    <p class="mb-4 text-sm leading-relaxed text-gray-500 line-clamp-3 dark:text-muted" set:html={marked.parseInline(description)} />
   )}
 
   <!-- Tags -->
