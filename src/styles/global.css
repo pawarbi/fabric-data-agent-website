@@ -11,6 +11,17 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
+  /* Scroll-triggered fade-in animation */
+  .animate-on-scroll {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  }
+  .animate-on-scroll.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
   /* Custom scrollbar */
   ::-webkit-scrollbar {
     width: 6px;
