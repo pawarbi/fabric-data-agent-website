@@ -1,4 +1,5 @@
 ---
+import { ClientRouter } from 'astro:transitions';
 import Sidebar from '../components/Sidebar.astro';
 import TopBar from '../components/TopBar.astro';
 import Footer from '../components/Footer.astro';
@@ -8,12 +9,15 @@ import '../styles/global.css';
 interface Props {
   title: string;
   description?: string;
+  ogImage?: string;
 }
 
-const { title, description = 'Your intelligent data exploration companion – articles, tools, and resources for Microsoft Fabric Data Agent.' } = Astro.props;
+const { title, description = 'Your intelligent data exploration companion - articles, tools, and resources for Microsoft Fabric Data Agent.', ogImage } = Astro.props;
 const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 const umamiId = import.meta.env.PUBLIC_UMAMI_WEBSITE_ID || '';
 const umamiSrc = import.meta.env.PUBLIC_UMAMI_SCRIPT_URL || 'https://cloud.umami.is/script.js';
+const canonicalUrl = new URL(Astro.url.pathname, 'https://fabricdataagent.com').toString();
+const ogImageUrl = ogImage || `${base}data-agent-logo.png`;
 ---
 
 <!doctype html>
@@ -47,7 +51,24 @@ const umamiSrc = import.meta.env.PUBLIC_UMAMI_SCRIPT_URL || 'https://cloud.umami
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <title>{title}</title>
+    <link rel="canonical" href={canonicalUrl} />
     <link rel="help" type="text/plain" href="/llms.txt" title="LLM-friendly site content" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:site_name" content="Fabric Data Agent" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+
+    <ClientRouter />
     {umamiId && <script defer src={umamiSrc} data-website-id={umamiId}></script>}
   </head>
   <body class="min-h-screen bg-gray-50 font-sans text-gray-900 antialiased dark:bg-darker dark:text-light">
@@ -138,6 +159,28 @@ const umamiSrc = import.meta.env.PUBLIC_UMAMI_SCRIPT_URL || 'https://cloud.umami
 
     <script is:inline define:vars={{ base }}>
       window.__BASE_URL__ = base;
+    </script>
+
+    <script is:inline>
+      // Scroll-triggered fade-in animations
+      function initScrollAnimations() {
+        var elements = document.querySelectorAll('.animate-on-scroll');
+        if (!elements.length) return;
+
+        var observer = new IntersectionObserver(function(entries) {
+          entries.forEach(function(entry) {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('is-visible');
+              observer.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+        elements.forEach(function(el) { observer.observe(el); });
+      }
+
+      document.addEventListener('DOMContentLoaded', initScrollAnimations);
+      document.addEventListener('astro:after-swap', initScrollAnimations);
     </script>
 
     <style is:global>
