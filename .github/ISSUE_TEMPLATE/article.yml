@@ -1,21 +1,11 @@
 name: Submit an Article
 description: Share a blog post or article about Microsoft Fabric Data Agents.
-title: "[Article] "
 labels: ["content-submission", "article"]
 body:
   - type: markdown
     attributes:
       value: |
         Thanks for sharing an article with the community. Please fill out the fields below. All fields marked with an asterisk (*) are required.
-
-  - type: input
-    id: title
-    attributes:
-      label: Article Title
-      description: The title of the article as it appears on the source.
-      placeholder: "e.g. Getting Started with Microsoft Fabric Data Agents"
-    validations:
-      required: true
 
   - type: input
     id: url

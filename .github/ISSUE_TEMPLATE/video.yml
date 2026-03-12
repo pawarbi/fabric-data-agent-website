@@ -1,21 +1,11 @@
 name: Submit a Video
 description: Share a YouTube video about Microsoft Fabric Data Agents.
-title: "[Video] "
 labels: ["content-submission", "video"]
 body:
   - type: markdown
     attributes:
       value: |
         Thanks for sharing a video with the community. Please fill out the fields below.
-
-  - type: input
-    id: title
-    attributes:
-      label: Video Title
-      description: The title of the video.
-      placeholder: "e.g. Building Your First Data Agent"
-    validations:
-      required: true
 
   - type: input
     id: youtube_id
