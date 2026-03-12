@@ -20,6 +20,7 @@ const resources = defineCollection({
   schema: z.object({
     title: z.string(),
     url: z.string().url(),
+    author: z.string().optional(),
     description: z.string(),
     category: z.string(),
     tags: z.array(z.string()).default([]),
@@ -73,6 +74,7 @@ const tools = defineCollection({
   schema: z.object({
     title: z.string(),
     url: z.string().url(),
+    author: z.string().optional(),
     description: z.string(),
     category: z.string(),
     tags: z.array(z.string()).default([]),

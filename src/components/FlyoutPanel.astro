@@ -59,13 +59,13 @@
       <div id="flyout-tags" class="flex flex-wrap gap-2"></div>
     </div>
 
-    <!-- Contributor & submission info -->
+    <!-- Author info -->
     <div class="flex items-center gap-4 text-sm text-gray-400 dark:text-muted/60 border-t border-gray-200 dark:border-indigo/10 pt-4">
-      <div id="flyout-contributor" class="flex items-center gap-1.5">
+      <div id="flyout-author" class="flex items-center gap-1.5">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
         </svg>
-        <span id="flyout-contributor-name"></span>
+        <span id="flyout-author-name"></span>
       </div>
     </div>
 
@@ -145,9 +145,12 @@ function initFlyout() {
       tagsContainer.classList.add('hidden');
     }
 
-    // Contributor
-    document.getElementById('flyout-contributor-name')!.textContent = data.contributor || '';
-    document.getElementById('flyout-contributor')!.classList.toggle('hidden', !data.contributor);
+    // Author
+    const authorLabels: Record<string, string> = { article: 'Author', video: 'Speaker', resource: 'Creator', tool: 'Creator', linkedin: 'Author' };
+    const authorLabel = authorLabels[data.type] || '';
+    const authorName = data.author || '';
+    document.getElementById('flyout-author-name')!.textContent = authorName ? `${authorLabel}: ${authorName}` : '';
+    document.getElementById('flyout-author')!.classList.toggle('hidden', !authorName);
 
     // CTA
     const cta = document.getElementById('flyout-cta') as HTMLAnchorElement;
@@ -205,7 +208,7 @@ function initFlyout() {
       type: detail.type || 'article',
       date: detail.date || '',
       tags: detail.tags || '',
-      contributor: detail.contributor || '',
+      author: detail.author || '',
       youtubeId: detail.youtubeId || '',
       linkedinActivityId: detail.linkedinActivityId || '',
     });
@@ -225,7 +228,7 @@ function initFlyout() {
         type: el.dataset.flyoutType || 'article',
         date: el.dataset.flyoutDate || '',
         tags: el.dataset.tags || '',
-        contributor: el.dataset.flyoutContributor || '',
+        author: el.dataset.flyoutAuthor || '',
         youtubeId: el.dataset.flyoutYoutubeid || '',
         linkedinActivityId: el.dataset.flyoutLinkedinactivityid || '',
       });

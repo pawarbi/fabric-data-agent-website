@@ -61,7 +61,7 @@ const allTags = [...new Set(videos.flatMap((v) => v.data.tags))].sort();
               data-flyout-url={`https://www.youtube.com/watch?v=${video.data.youtubeId}`}
               data-flyout-type="video"
               data-flyout-date={new Date(video.data.publishDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
-              data-flyout-contributor={video.data.contributor}
+              data-flyout-author={video.data.speaker}
               data-flyout-youtubeid={video.data.youtubeId}
               data-tags={video.data.tags.join(',')}
             >
@@ -84,7 +84,7 @@ const allTags = [...new Set(videos.flatMap((v) => v.data.tags))].sort();
               )}
 
               <p class="text-xs text-gray-400 dark:text-muted/60 pt-2">
-                Contributed by {video.data.contributor}
+                Speaker: {video.data.speaker}
               </p>
             </div>
           </div>

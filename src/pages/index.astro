@@ -43,7 +43,7 @@ interface SectionItem {
   description: string;
   url: string;
   tags: string[];
-  contributor: string;
+  author?: string;
   date?: string;
 }
 
@@ -52,13 +52,14 @@ function toSectionItems(
   getDescription: (d: any) => string,
   getUrl: (d: any) => string,
   dateField?: string,
+  authorField?: string,
 ): SectionItem[] {
   return items.map(item => ({
     title: item.data.title,
     description: getDescription(item.data),
     url: getUrl(item.data),
     tags: item.data.tags,
-    contributor: item.data.contributor,
+    author: authorField ? item.data[authorField] : undefined,
     date: dateField && item.data[dateField] ? new Date(item.data[dateField]).toISOString() : undefined,
   }));
 }
@@ -72,11 +73,11 @@ const difficultyColors: Record<string, { bg: string; text: string }> = {
 const siteUrl = Astro.site?.toString() || 'https://fabricdataagent.com';
 
 const sections = [
-  { key: 'articles', label: 'Articles', href: `${base}articles/`, items: toSectionItems(latestArticles, d => d.summary, d => d.url, 'publishDate'), type: 'article' as const },
-  { key: 'videos', label: 'Videos', href: `${base}videos/`, items: toSectionItems(latestVideos, d => d.description, d => `https://www.youtube.com/watch?v=${d.youtubeId}`, 'publishDate'), type: 'video' as const },
+  { key: 'articles', label: 'Articles', href: `${base}articles/`, items: toSectionItems(latestArticles, d => d.summary, d => d.url, 'publishDate', 'author'), type: 'article' as const },
+  { key: 'videos', label: 'Videos', href: `${base}videos/`, items: toSectionItems(latestVideos, d => d.description, d => `https://www.youtube.com/watch?v=${d.youtubeId}`, 'publishDate', 'speaker'), type: 'video' as const },
   { key: 'events', label: 'Events', href: `${base}events/`, items: toSectionItems(latestEvents, d => d.description, d => d.url, 'date'), type: 'event' as const },
-  { key: 'resources', label: 'Resources', href: `${base}resources/`, items: toSectionItems(latestResources, d => d.description, d => d.url), type: 'resource' as const },
-  { key: 'tools', label: 'Tools', href: `${base}tools/`, items: toSectionItems(latestTools, d => d.description, d => d.url), type: 'tool' as const },
+  { key: 'resources', label: 'Resources', href: `${base}resources/`, items: toSectionItems(latestResources, d => d.description, d => d.url, undefined, 'author'), type: 'resource' as const },
+  { key: 'tools', label: 'Tools', href: `${base}tools/`, items: toSectionItems(latestTools, d => d.description, d => d.url, undefined, 'author'), type: 'tool' as const },
 ];
 ---
 
@@ -518,7 +519,7 @@ const sections = [
               description={item.description}
               url={item.url}
               tags={item.tags}
-              contributor={item.contributor}
+              author={item.author}
               type={type}
               date={item.date}
             />
@@ -554,7 +555,7 @@ const sections = [
             data-flyout-url={post.data.linkedinUrl}
             data-flyout-type="linkedin"
             data-flyout-date={new Date(post.data.submittedDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
-            data-flyout-contributor={post.data.contributor}
+            data-flyout-author={post.data.author}
           >
             <div class="mb-3 flex items-center justify-between">
               <span class="inline-flex items-center gap-1 rounded-md bg-gray-100 dark:bg-indigo/20 px-2 py-1 text-xs font-medium text-gray-500 dark:text-muted">
@@ -579,12 +580,12 @@ const sections = [
                 ))}
               </div>
             )}
-            {post.data.contributor && (
+            {post.data.author && (
               <div class="flex items-center gap-1.5 text-xs text-gray-400 dark:text-muted/60">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
-                <span>{post.data.contributor}</span>
+                <span>Author: {post.data.author}</span>
               </div>
             )}
           </div>

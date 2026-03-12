@@ -35,7 +35,7 @@ const allTags = [...new Set(allResources.flatMap((r) => r.data.tags))];
               description={resource.data.description}
               url={resource.data.url}
               tags={resource.data.tags}
-              contributor={resource.data.contributor}
+              author={resource.data.author}
               type="resource"
             />
           ))}
