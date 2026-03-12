@@ -81,6 +81,8 @@
 </aside>
 
 <script>
+import { marked } from 'marked';
+
 function initFlyout() {
   const backdrop = document.getElementById('flyout-backdrop');
   const panel = document.getElementById('flyout-panel');
@@ -95,7 +97,7 @@ function initFlyout() {
 
     document.getElementById('flyout-type-badge')!.textContent = `${typeIcons[data.type] || '📄'} ${data.type}`;
     document.getElementById('flyout-title')!.textContent = data.title;
-    document.getElementById('flyout-description')!.textContent = data.description || '';
+    document.getElementById('flyout-description')!.innerHTML = marked.parseInline(data.description || '') as string;
 
     // Source domain
     const domainEl = document.getElementById('flyout-domain')!;
