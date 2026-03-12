@@ -57,4 +57,16 @@
   a {
     transition: color 0.2s ease;
   }
+
+  /* Accessibility: respect reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    .animate-on-scroll {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
 }

@@ -300,6 +300,22 @@ const sections = [
       0%, 100% { opacity: 0.7; }
       50% { opacity: 0; }
     }
+
+    @media (prefers-reduced-motion: reduce) {
+      .chat-msg {
+        opacity: 1;
+        transform: none;
+      }
+      .chat-msg.chat-show {
+        animation: none;
+      }
+      .typing-dots span {
+        animation: none;
+      }
+      .stream-cursor {
+        animation: none;
+      }
+    }
   </style>
 
   <script>
@@ -309,6 +325,17 @@ const sections = [
 
       const messages = Array.from(container.querySelectorAll('.chat-msg')) as HTMLElement[];
       if (messages.length === 0) return;
+
+      // Reduced motion: show all messages immediately, skip animation
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        messages.forEach(msg => {
+          msg.style.display = '';
+          msg.style.opacity = '1';
+          msg.style.transform = 'none';
+        });
+        container.scrollTop = container.scrollHeight;
+        return;
+      }
 
       // Auto-scroll container to bottom
       function scrollToBottom() {
@@ -603,6 +630,11 @@ const sections = [
     }
     .animate-gradient {
       animation: gradient-shift 6s ease infinite;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .animate-gradient {
+        animation: none;
+      }
     }
   </style>
 </BaseLayout>
