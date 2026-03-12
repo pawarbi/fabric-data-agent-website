@@ -86,7 +86,8 @@ Each collection has a Zod schema defined in `src/content.config.ts`. New content
 - **CSS:** Tailwind utility classes preferred; custom CSS only when Tailwind cannot achieve the desired result
 - **Scripts:** Use `is:inline` for scripts that need to run before hydration (e.g., theme toggle). Use standard `<script>` for everything else.
 - **Comments:** Only add comments that explain *why*, not *what*. Code should be self-explanatory.
-- **No em dashes:** Never use em dashes (`—`) anywhere in code, config, commit messages, or documentation. Use regular hyphens (`-`) or rewrite the sentence instead.
+- **No em dashes:** Never use em dashes (`---`) anywhere in code, config, commit messages, or documentation. Use regular hyphens (`-`) or rewrite the sentence instead.
+- **Mobile-first:** All changes must be responsive and mobile-friendly. Use Tailwind's responsive prefixes (`sm:`, `md:`, `lg:`) and test layouts at mobile widths. Never ship desktop-only designs.
 
 ## Adding External Dependencies
 
