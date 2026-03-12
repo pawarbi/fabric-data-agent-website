@@ -1,0 +1,148 @@
+name: Remove Content
+
+on:
+  issues:
+    types: [labeled]
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: "remove-content"
+  cancel-in-progress: false
+
+jobs:
+  remove-content:
+    if: github.event.label.name == 'remove' && contains(github.event.issue.labels.*.name, 'content-submission')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Find and delete content file
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const labels = issue.labels.map(l => l.name);
+
+            // Determine content type from labels
+            const typeMap = {
+              'article': 'articles',
+              'video': 'videos',
+              'resource': 'resources',
+              'event': 'events',
+              'tool': 'tools',
+              'linkedin': 'linkedin'
+            };
+
+            let contentType = null;
+            let contentDir = null;
+            for (const [label, dir] of Object.entries(typeMap)) {
+              if (labels.includes(label)) {
+                contentType = label;
+                contentDir = dir;
+                break;
+              }
+            }
+
+            if (!contentType) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                body: '❌ Could not determine content type. The issue must have one of these labels: article, video, resource, event, tool, linkedin.'
+              });
+              core.setFailed('No content type label found');
+              return;
+            }
+
+            // Same slug logic as add-content.yml
+            function toSlug(str) {
+              return str.toLowerCase()
+                .replace(/[^a-z0-9\s-]/g, '')
+                .replace(/\s+/g, '-')
+                .replace(/-+/g, '-')
+                .substring(0, 60)
+                .replace(/-$/, '');
+            }
+
+            // Strip [Type] prefix for backward compatibility
+            const title = issue.title.replace(/^\[.*?\]\s*/, '').trim();
+            const slug = toSlug(title);
+            const dir = `src/content/${contentDir}`;
+
+            // Search for matching file: exact slug or slug with -N suffix
+            const fs = require('fs');
+            const path = require('path');
+
+            let filePath = null;
+            if (fs.existsSync(`${dir}/${slug}.md`)) {
+              filePath = `${dir}/${slug}.md`;
+            } else {
+              // Check for suffixed variants (-2, -3, etc.)
+              if (fs.existsSync(dir)) {
+                const files = fs.readdirSync(dir);
+                const match = files.find(f => f.startsWith(slug + '-') && f.endsWith('.md'));
+                if (match) {
+                  filePath = `${dir}/${match}`;
+                }
+              }
+            }
+
+            if (!filePath) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                body: `⚠️ No content file found for this submission.\n\nLooked for \`${dir}/${slug}.md\` (and suffixed variants) but it doesn't exist. The content may have already been removed manually.`
+              });
+              core.setFailed(`File not found: ${dir}/${slug}.md`);
+              return;
+            }
+
+            // Delete the file
+            fs.unlinkSync(filePath);
+            console.log(`Deleted: ${filePath}`);
+
+            core.exportVariable('CONTENT_FILE', filePath);
+            core.exportVariable('CONTENT_TITLE', title);
+            core.exportVariable('CONTENT_TYPE', contentType);
+            core.exportVariable('ISSUE_NUMBER', issue.number.toString());
+
+      - name: Commit and push deletion
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "content: remove ${{ env.CONTENT_TYPE }} - ${{ env.CONTENT_TITLE }}
+
+          Auto-removed from issue #${{ env.ISSUE_NUMBER }}"
+          git push origin main
+
+      - name: Comment and close issue
+        if: success()
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const issueNumber = parseInt(process.env.ISSUE_NUMBER);
+            const filePath = process.env.CONTENT_FILE;
+            const contentType = process.env.CONTENT_TYPE;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              body: `🗑️ The ${contentType} submission has been removed.\n\nDeleted \`${filePath}\` from the site. The change will be live within a few minutes.`
+            });
+
+            await github.rest.issues.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              state: 'closed',
+              state_reason: 'completed'
+            });
