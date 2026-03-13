@@ -57,6 +57,18 @@ contentNodes.forEach(node => {
 });
 
 const graphData = JSON.stringify({ nodes, links });
+
+// Tag counts for pills (sorted by count descending)
+const tagCounts = new Map<string, number>();
+contentNodes.forEach(n => {
+  n.tags.forEach((t: string) => {
+    tagCounts.set(t, (tagCounts.get(t) || 0) + 1);
+  });
+});
+const sortedTags = [...tagCounts.entries()].sort((a, b) => b[1] - a[1]);
+
+// Content data for client-side filtering
+const contentData = JSON.stringify(contentNodes);
 ---
 
 <BaseLayout title="Explore | Fabric Data Agent">
@@ -91,11 +103,40 @@ const graphData = JSON.stringify({ nodes, links });
     <p class="mt-4 text-center text-xs text-gray-400 dark:text-muted/60">
       Click a content node to preview · Drag to rearrange · Scroll to zoom
     </p>
+
+    <!-- Browse by Tag -->
+    <div class="mt-12">
+      <h2 class="mb-4 text-xl font-semibold text-gray-900 dark:text-light">Browse by Tag</h2>
+      <div id="tag-pills" class="flex flex-wrap gap-2">
+        {sortedTags.map(([tag, count]) => (
+          <button
+            data-tag={tag}
+            class="tag-pill inline-flex items-center gap-1.5 rounded-full border border-gray-200 dark:border-indigo/20 bg-white dark:bg-dark/40 px-3 py-1.5 text-sm font-medium text-gray-600 dark:text-muted transition-all duration-200 hover:border-teal/40 hover:text-teal-700 dark:hover:text-teal hover:bg-teal/10"
+          >
+            {tag}
+            <span class="rounded-full bg-gray-100 dark:bg-indigo/10 px-1.5 py-0.5 text-xs text-gray-400 dark:text-muted/60">
+              {count}
+            </span>
+          </button>
+        ))}
+      </div>
+    </div>
+
+    <!-- Filtered content results -->
+    <div id="tag-results" class="mt-6 hidden">
+      <div class="mb-4 flex items-center justify-between">
+        <p id="tag-results-label" class="text-sm text-gray-500 dark:text-muted"></p>
+        <button id="tag-clear" class="text-xs text-teal hover:underline">Clear</button>
+      </div>
+      <div id="tag-results-grid" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"></div>
+    </div>
   </section>
 </BaseLayout>
 
 <!-- Pass graph data to client -->
 <script id="graph-data" type="application/json" set:html={graphData}></script>
+<!-- Pass content data for tag filtering -->
+<script id="content-data" type="application/json" set:html={contentData}></script>
 
 <!-- D3.js -->
 <script is:inline src="https://d3js.org/d3.v7.min.js"></script>
@@ -316,5 +357,123 @@ const graphData = JSON.stringify({ nodes, links });
     initGraph();
   }
   document.addEventListener('astro:after-swap', initGraph);
+})();
+</script>
+
+<script is:inline>
+(function() {
+  var typeColors = {
+    article: '#00D4AA',
+    video: '#8B5CF6',
+    resource: '#F59E0B',
+    event: '#EF4444',
+    tool: '#3B82F6',
+    linkedin: '#EC4899',
+  };
+
+  function initTagBrowser() {
+    var dataEl = document.getElementById('content-data');
+    if (!dataEl) return;
+
+    var allContent = JSON.parse(dataEl.textContent);
+    var pills = document.querySelectorAll('.tag-pill');
+    var resultsSection = document.getElementById('tag-results');
+    var resultsGrid = document.getElementById('tag-results-grid');
+    var resultsLabel = document.getElementById('tag-results-label');
+    var clearBtn = document.getElementById('tag-clear');
+    var activeTag = null;
+
+    function selectTag(tag) {
+      if (activeTag === tag) {
+        clearSelection();
+        return;
+      }
+      activeTag = tag;
+
+      pills.forEach(function(pill) {
+        if (pill.getAttribute('data-tag') === tag) {
+          pill.classList.add('border-teal', 'bg-teal/20', 'text-teal-700', 'dark:text-teal');
+          pill.classList.remove('border-gray-200', 'dark:border-indigo/20', 'bg-white', 'dark:bg-dark/40', 'text-gray-600', 'dark:text-muted');
+        } else {
+          pill.classList.remove('border-teal', 'bg-teal/20', 'text-teal-700', 'dark:text-teal');
+          pill.classList.add('border-gray-200', 'dark:border-indigo/20', 'bg-white', 'dark:bg-dark/40', 'text-gray-600', 'dark:text-muted');
+          pill.style.opacity = '0.5';
+        }
+      });
+
+      var filtered = allContent.filter(function(item) {
+        return item.tags.indexOf(tag) !== -1;
+      });
+
+      resultsLabel.textContent = filtered.length + ' item' + (filtered.length !== 1 ? 's' : '') + ' tagged "' + tag + '"';
+      resultsGrid.innerHTML = '';
+
+      filtered.forEach(function(item) {
+        var color = typeColors[item.type] || '#6B7280';
+        var card = document.createElement('div');
+        card.className = 'group cursor-pointer rounded-xl border border-gray-200 dark:border-indigo/20 bg-white dark:bg-dark/40 p-4 transition-all duration-200 hover:border-teal/40 hover:shadow-lg hover:shadow-teal/5';
+        card.innerHTML =
+          '<div class="mb-2 flex items-center gap-2">' +
+            '<span class="inline-block h-2 w-2 rounded-full" style="background:' + color + '"></span>' +
+            '<span class="text-xs font-medium uppercase tracking-wide" style="color:' + color + '">' + item.type + '</span>' +
+          '</div>' +
+          '<h3 class="mb-1 text-sm font-semibold text-gray-900 dark:text-light line-clamp-2 group-hover:text-teal transition-colors">' + escapeHtml(item.title) + '</h3>' +
+          '<p class="text-xs text-gray-500 dark:text-muted line-clamp-2">' + escapeHtml(item.description) + '</p>';
+
+        card.addEventListener('click', function() {
+          if (typeof umami !== 'undefined') umami.track('tag-browse-click', { title: item.title, type: item.type, tag: tag });
+          var flyoutEvent = new CustomEvent('open-flyout', {
+            detail: {
+              title: item.title,
+              description: item.description,
+              url: item.url,
+              type: item.type,
+              tags: item.tags.join(','),
+              contributor: item.contributor,
+              youtubeId: item.youtubeId || '',
+            }
+          });
+          document.dispatchEvent(flyoutEvent);
+        });
+
+        resultsGrid.appendChild(card);
+      });
+
+      resultsSection.classList.remove('hidden');
+      resultsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function clearSelection() {
+      activeTag = null;
+      pills.forEach(function(pill) {
+        pill.classList.remove('border-teal', 'bg-teal/20', 'text-teal-700', 'dark:text-teal');
+        pill.classList.add('border-gray-200', 'dark:border-indigo/20', 'bg-white', 'dark:bg-dark/40', 'text-gray-600', 'dark:text-muted');
+        pill.style.opacity = '';
+      });
+      resultsSection.classList.add('hidden');
+      resultsGrid.innerHTML = '';
+    }
+
+    function escapeHtml(str) {
+      var div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    pills.forEach(function(pill) {
+      pill.addEventListener('click', function() {
+        selectTag(pill.getAttribute('data-tag'));
+      });
+    });
+
+    clearBtn.addEventListener('click', clearSelection);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initTagBrowser);
+  } else {
+    initTagBrowser();
+  }
+  document.addEventListener('astro:after-swap', initTagBrowser);
 })();
 </script>
