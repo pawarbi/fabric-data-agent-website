@@ -127,7 +127,7 @@ function initFlyout() {
     const linkedinContainer = document.getElementById('flyout-linkedin-container')!;
     const linkedinIframe = document.getElementById('flyout-linkedin-iframe') as HTMLIFrameElement;
     if (data.linkedinActivityId) {
-      linkedinIframe.src = `https://www.linkedin.com/embed/feed/update/urn:li:activity:${data.linkedinActivityId}`;
+      linkedinIframe.src = `https://www.linkedin.com/embed/feed/update/urn:li:${data.linkedinActivityId}`;
       linkedinContainer.classList.remove('hidden');
     } else {
       linkedinIframe.src = '';

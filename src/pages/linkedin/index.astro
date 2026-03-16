@@ -15,9 +15,12 @@ const posts = allPosts.sort(
 
 const allTags = [...new Set(posts.flatMap((p) => p.data.tags))].sort();
 
-function extractLinkedInActivityId(url: string): string | null {
-  const match = url.match(/activity[:\-](\d+)/);
-  return match ? match[1] : null;
+function extractLinkedInEmbed(url: string): { type: string; id: string } | null {
+  const activityMatch = url.match(/activity[:\-](\d+)/);
+  if (activityMatch) return { type: 'activity', id: activityMatch[1] };
+  const ugcMatch = url.match(/ugcPost[:\-](\d+)/);
+  if (ugcMatch) return { type: 'ugcPost', id: ugcMatch[1] };
+  return null;
 }
 ---
 
@@ -57,7 +60,7 @@ function extractLinkedInActivityId(url: string): string | null {
     ) : (
       <div id="linkedin-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
         {posts.map((post) => {
-          const activityId = extractLinkedInActivityId(post.data.linkedinUrl);
+          const embedInfo = extractLinkedInEmbed(post.data.linkedinUrl);
           const formattedDate = new Date(post.data.submittedDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
           return (
             <div
@@ -67,10 +70,10 @@ function extractLinkedInActivityId(url: string): string | null {
               data-sort-title={post.data.title.toLowerCase()}
             >
               {/* LinkedIn Embed */}
-              {activityId ? (
+              {embedInfo ? (
                 <div class="w-full bg-gray-100 dark:bg-dark/30">
                   <iframe
-                    src={`https://www.linkedin.com/embed/feed/update/urn:li:activity:${activityId}`}
+                    src={`https://www.linkedin.com/embed/feed/update/urn:li:${embedInfo.type}:${embedInfo.id}`}
                     height="400"
                     width="100%"
                     frameborder="0"
@@ -110,7 +113,7 @@ function extractLinkedInActivityId(url: string): string | null {
                 data-flyout-type="linkedin"
                 data-flyout-date={formattedDate}
                 data-flyout-contributor={post.data.contributor}
-                data-flyout-linkedinactivityid={activityId || ''}
+                data-flyout-linkedinactivityid={embedInfo ? `${embedInfo.type}:${embedInfo.id}` : ''}
                 data-tags={post.data.tags.join(',')}
               >
                 <h3 class="text-xl font-semibold text-gray-900 dark:text-light group-hover:text-teal transition-colors">
