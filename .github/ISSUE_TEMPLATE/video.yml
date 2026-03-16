@@ -10,9 +10,9 @@ body:
   - type: input
     id: youtube_id
     attributes:
-      label: YouTube Video ID
-      description: The ID from the YouTube URL. For example, if the URL is https://youtube.com/watch?v=abc123, the ID is "abc123".
-      placeholder: "abc123"
+      label: YouTube Video URL or ID
+      description: Paste the full YouTube URL (e.g. https://www.youtube.com/watch?v=abc123) or just the video ID.
+      placeholder: "https://www.youtube.com/watch?v=abc123"
     validations:
       required: true
 

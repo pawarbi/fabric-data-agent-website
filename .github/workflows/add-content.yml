@@ -226,7 +226,7 @@ jobs:
               }
 
             } else if (contentType === 'video') {
-              const youtubeId = extractYouTubeId(parseField(body, 'YouTube Video ID'));
+              const youtubeId = extractYouTubeId(parseField(body, 'YouTube Video URL or ID'));
               const speaker = parseField(body, 'Speaker / Presenter');
               const publishDate = validateDate(parseField(body, 'Publish Date'));
               const description = parseField(body, 'Description');
@@ -470,7 +470,7 @@ jobs:
             -f context=check \
             -f description="Build validated in content workflow"
 
-          gh pr merge "$BRANCH" --auto --merge --delete-branch
+          gh pr merge "$BRANCH" --merge --delete-branch
 
       - name: Comment and close issue
         if: success()
@@ -485,7 +485,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: issueNumber,
-              body: `Your ${contentType} submission has been approved! A PR has been created and will be auto-merged once CI passes.\n\nThe content file \`${filePath}\` will be live on the site within a few minutes. Thank you for contributing!`
+              body: `Your ${contentType} submission has been approved! A PR has been created and merged.\n\nThe content file \`${filePath}\` will be live on the site within a few minutes. Thank you for contributing!`
             });
 
             await github.rest.issues.update({
