@@ -14,10 +14,6 @@ items:
     type: "video"
     url: "/videos/"
     description: "Multi-agent orchestration, RAG patterns, and real-time processing."
-  - title: "Fabric Notebook Utilities"
-    type: "tool"
-    url: "https://github.com/microsoft/fabric-notebook-utils"
-    description: "Utility functions including testing utilities for production agents."
 ---
 
 For experienced practitioners ready to take their data agents to production scale.
