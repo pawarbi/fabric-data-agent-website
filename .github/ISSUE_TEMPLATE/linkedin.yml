@@ -11,7 +11,7 @@ body:
     id: linkedin_url
     attributes:
       label: LinkedIn Post URL
-      description: The full URL to the LinkedIn post.
+      description: Must start with https://www.linkedin.com/
       placeholder: "https://www.linkedin.com/posts/..."
     validations:
       required: true
