@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import TagFilter from '../../components/TagFilter.astro';
+import SortDropdown from '../../components/SortDropdown.astro';
 import PageHeader from '../../components/PageHeader.astro';
 import JsonLd from '../../components/JsonLd.astro';
 
@@ -28,7 +29,16 @@ const allTags = [...new Set(videos.flatMap((v) => v.data.tags))].sort();
   />
 
   <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-    {allTags.length > 0 && <TagFilter tags={allTags} />}
+    <div class="flex flex-wrap items-start justify-between gap-4 mb-2">
+      <div class="flex-1 min-w-0">{allTags.length > 0 && <TagFilter tags={allTags} />}</div>
+      <SortDropdown
+        options={[
+          { value: 'published', label: 'Published Date' },
+          { value: 'title', label: 'Title A–Z' },
+        ]}
+        defaultValue="published"
+      />
+    </div>
 
     {videos.length === 0 ? (
       <div class="text-center py-20">
@@ -36,11 +46,13 @@ const allTags = [...new Set(videos.flatMap((v) => v.data.tags))].sort();
         <p class="mt-2 text-sm text-gray-400 dark:text-muted/60">Have a video to share? <a href={`${base}contribute/`} class="text-teal underline decoration-teal/30 underline-offset-2 hover:text-tealDark">Contribute</a></p>
       </div>
     ) : (
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
+      <div id="videos-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
         {videos.map((video) => (
           <div
             class="group rounded-2xl border border-gray-200 bg-white/60 dark:border-indigo/20 dark:bg-dark/50 backdrop-blur-sm overflow-hidden transition-all duration-300 hover:border-teal/40 hover:shadow-[0_0_20px_rgba(0,212,170,0.15)] hover:scale-[1.01]"
             data-tags={video.data.tags.join(',')}
+            data-sort-publish={new Date(video.data.publishDate).getTime()}
+            data-sort-title={video.data.title.toLowerCase()}
           >
             <div class="aspect-video w-full">
               <iframe
@@ -92,4 +104,22 @@ const allTags = [...new Set(videos.flatMap((v) => v.data.tags))].sort();
       </div>
     )}
   </section>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const grid = document.getElementById('videos-grid');
+      if (!grid) return;
+
+      document.addEventListener('sort-change', ((e: CustomEvent) => {
+        const sortKey = e.detail.value;
+        const items = [...grid.children] as HTMLElement[];
+        if (sortKey === 'title') {
+          items.sort((a, b) => (a.getAttribute('data-sort-title') || '').localeCompare(b.getAttribute('data-sort-title') || ''));
+        } else {
+          items.sort((a, b) => Number(b.getAttribute('data-sort-publish')) - Number(a.getAttribute('data-sort-publish')));
+        }
+        items.forEach((item) => grid.appendChild(item));
+      }) as EventListener);
+    });
+  </script>
 </BaseLayout>

@@ -3,6 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import PageHeader from '../../components/PageHeader.astro';
 import ContentCard from '../../components/ContentCard.astro';
 import TagFilter from '../../components/TagFilter.astro';
+import SortDropdown from '../../components/SortDropdown.astro';
 import JsonLd from '../../components/JsonLd.astro';
 import { getCollection } from 'astro:content';
 
@@ -28,20 +29,35 @@ const allTags = [...new Set(articles.flatMap((a) => a.data.tags))].sort();
   />
 
   <section class="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
-    <TagFilter tags={allTags} />
+    <div class="flex flex-wrap items-start justify-between gap-4 mb-2">
+      <div class="flex-1 min-w-0"><TagFilter tags={allTags} /></div>
+      <SortDropdown
+        options={[
+          { value: 'published', label: 'Published Date' },
+          { value: 'submitted', label: 'Submitted Date' },
+        ]}
+        defaultValue="published"
+      />
+    </div>
 
     {articles.length > 0 ? (
-      <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div id="articles-grid" class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {articles.map((article) => (
-          <ContentCard
-            title={article.data.title}
-            description={article.data.summary}
-            url={article.data.url}
-            tags={article.data.tags}
-            author={article.data.author}
-            type="article"
-            date={new Date(article.data.publishDate).toLocaleDateString()}
-          />
+          <div
+            data-sort-publish={new Date(article.data.publishDate).getTime()}
+            data-sort-submitted={article.data.submittedDate ? new Date(article.data.submittedDate).getTime() : new Date(article.data.publishDate).getTime()}
+            data-tags={article.data.tags.join(',')}
+          >
+            <ContentCard
+              title={article.data.title}
+              description={article.data.summary}
+              url={article.data.url}
+              tags={article.data.tags}
+              author={article.data.author}
+              type="article"
+              date={new Date(article.data.publishDate).toLocaleDateString()}
+            />
+          </div>
         ))}
       </div>
     ) : (
@@ -53,4 +69,19 @@ const allTags = [...new Set(articles.flatMap((a) => a.data.tags))].sort();
       </div>
     )}
   </section>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const grid = document.getElementById('articles-grid');
+      if (!grid) return;
+
+      document.addEventListener('sort-change', ((e: CustomEvent) => {
+        const sortKey = e.detail.value;
+        const attr = sortKey === 'submitted' ? 'data-sort-submitted' : 'data-sort-publish';
+        const items = [...grid.children] as HTMLElement[];
+        items.sort((a, b) => Number(b.getAttribute(attr)) - Number(a.getAttribute(attr)));
+        items.forEach((item) => grid.appendChild(item));
+      }) as EventListener);
+    });
+  </script>
 </BaseLayout>
