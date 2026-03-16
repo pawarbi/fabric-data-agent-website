@@ -4,6 +4,7 @@ import PageHeader from '../../components/PageHeader.astro';
 import ContentCard from '../../components/ContentCard.astro';
 import TagFilter from '../../components/TagFilter.astro';
 import SortDropdown from '../../components/SortDropdown.astro';
+import ViewToggle from '../../components/ViewToggle.astro';
 import JsonLd from '../../components/JsonLd.astro';
 import { getCollection } from 'astro:content';
 
@@ -31,13 +32,16 @@ const allTags = [...new Set(articles.flatMap((a) => a.data.tags))].sort();
   <section class="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
     <div class="flex flex-wrap items-start justify-between gap-4 mb-2">
       <div class="flex-1 min-w-0"><TagFilter tags={allTags} /></div>
-      <SortDropdown
-        options={[
-          { value: 'published', label: 'Published Date' },
-          { value: 'submitted', label: 'Submitted Date' },
-        ]}
-        defaultValue="published"
-      />
+      <div class="flex items-center gap-3">
+        <SortDropdown
+          options={[
+            { value: 'published', label: 'Published Date' },
+            { value: 'submitted', label: 'Submitted Date' },
+          ]}
+          defaultValue="published"
+        />
+        <ViewToggle gridId="articles-grid" listId="articles-list" />
+      </div>
     </div>
 
     {articles.length > 0 ? (
@@ -60,6 +64,34 @@ const allTags = [...new Set(articles.flatMap((a) => a.data.tags))].sort();
           </div>
         ))}
       </div>
+
+      <div id="articles-list" class="hidden space-y-1">
+        {articles.map((article) => (
+          <div
+            class="group flex items-center gap-3 rounded-lg px-3 py-2 transition-colors hover:bg-teal/5 dark:hover:bg-teal/10 cursor-pointer"
+            data-sort-publish={new Date(article.data.publishDate).getTime()}
+            data-sort-submitted={article.data.submittedDate ? new Date(article.data.submittedDate).getTime() : new Date(article.data.publishDate).getTime()}
+            data-tags={article.data.tags.join(',')}
+            data-flyout
+            data-flyout-title={article.data.title}
+            data-flyout-description={article.data.summary}
+            data-flyout-url={article.data.url}
+            data-flyout-type="article"
+            data-flyout-date={new Date(article.data.publishDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+            data-flyout-author={article.data.author}
+          >
+            <span class="text-xs text-gray-400 dark:text-muted/60 whitespace-nowrap w-24 shrink-0">
+              {new Date(article.data.publishDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+            </span>
+            <span class="text-sm font-medium text-gray-900 dark:text-light group-hover:text-teal transition-colors truncate">
+              {article.data.title}
+            </span>
+            <span class="ml-auto text-xs text-gray-400 dark:text-muted/60 whitespace-nowrap shrink-0">
+              {article.data.author}
+            </span>
+          </div>
+        ))}
+      </div>
     ) : (
       <div class="rounded-xl border border-dashed border-gray-200 dark:border-indigo/20 py-16 text-center">
         <p class="text-lg text-gray-500 dark:text-muted">No articles yet. Be the first to contribute!</p>
@@ -73,14 +105,18 @@ const allTags = [...new Set(articles.flatMap((a) => a.data.tags))].sort();
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const grid = document.getElementById('articles-grid');
-      if (!grid) return;
+      const list = document.getElementById('articles-list');
+      if (!grid || !list) return;
 
+      // Sort both views
       document.addEventListener('sort-change', ((e: CustomEvent) => {
         const sortKey = e.detail.value;
         const attr = sortKey === 'submitted' ? 'data-sort-submitted' : 'data-sort-publish';
-        const items = [...grid.children] as HTMLElement[];
-        items.sort((a, b) => Number(b.getAttribute(attr)) - Number(a.getAttribute(attr)));
-        items.forEach((item) => grid.appendChild(item));
+        [grid, list].forEach((container) => {
+          const items = [...container.children] as HTMLElement[];
+          items.sort((a, b) => Number(b.getAttribute(attr)) - Number(a.getAttribute(attr)));
+          items.forEach((item) => container.appendChild(item));
+        });
       }) as EventListener);
     });
   </script>

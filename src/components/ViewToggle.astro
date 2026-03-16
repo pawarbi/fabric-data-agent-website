@@ -1,0 +1,33 @@
+---
+interface Props {
+  gridId: string;
+  listId: string;
+}
+
+const { gridId, listId } = Astro.props;
+---
+
+<div class="view-toggle-group flex rounded-lg border border-gray-200 dark:border-indigo/20 overflow-hidden">
+  <button
+    class="view-btn active p-1.5 text-gray-400 dark:text-muted/60 hover:text-teal transition-colors"
+    title="Grid view"
+    onclick={`document.getElementById('${gridId}').classList.remove('hidden'); document.getElementById('${listId}').classList.add('hidden'); this.parentElement.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active')); this.classList.add('active');`}
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+    </svg>
+  </button>
+  <button
+    class="view-btn p-1.5 text-gray-400 dark:text-muted/60 hover:text-teal transition-colors"
+    title="List view"
+    onclick={`document.getElementById('${listId}').classList.remove('hidden'); document.getElementById('${gridId}').classList.add('hidden'); this.parentElement.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active')); this.classList.add('active');`}
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+    </svg>
+  </button>
+</div>
+
+<style is:global>
+  .view-btn.active { color: #00D4AA; }
+</style>
