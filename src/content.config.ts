@@ -49,7 +49,7 @@ const events = defineCollection({
     date: z.coerce.date(),
     endDate: z.coerce.date().optional(),
     location: z.string(),
-    type: z.enum(['conference', 'session', 'meetup', 'webinar']),
+    type: z.enum(['conference', 'session', 'meetup', 'webinar', 'workshop']),
     description: z.string(),
     tags: z.array(z.string()).default([]),
     contributor: z.string().default('Community Member'),
