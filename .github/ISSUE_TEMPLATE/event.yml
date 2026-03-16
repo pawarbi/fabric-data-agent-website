@@ -52,6 +52,7 @@ body:
         - webinar
         - meetup
         - session
+        - workshop
     validations:
       required: true
 

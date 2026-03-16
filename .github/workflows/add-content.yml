@@ -292,7 +292,7 @@ jobs:
               if (!date) errors.push('Event Date is missing or invalid (use YYYY-MM-DD format)');
               if (!description) errors.push('Description is required');
 
-              const validTypes = ['conference', 'session', 'meetup', 'webinar'];
+              const validTypes = ['conference', 'session', 'meetup', 'webinar', 'workshop'];
               const normalizedType = eventType ? eventType.toLowerCase().trim() : 'conference';
               if (!validTypes.includes(normalizedType)) {
                 errors.push(`Event Type must be one of: ${validTypes.join(', ')}`);
@@ -472,7 +472,7 @@ jobs:
 
           gh pr merge "$BRANCH" --auto --merge --delete-branch
 
-      - name: Comment on issue
+      - name: Comment and close issue
         if: success()
         uses: actions/github-script@v8
         with:
@@ -486,6 +486,14 @@ jobs:
               repo: context.repo.repo,
               issue_number: issueNumber,
               body: `Your ${contentType} submission has been approved! A PR has been created and will be auto-merged once CI passes.\n\nThe content file \`${filePath}\` will be live on the site within a few minutes. Thank you for contributing!`
+            });
+
+            await github.rest.issues.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              state: 'closed',
+              state_reason: 'completed'
             });
 
       - name: Report build failure on issue
