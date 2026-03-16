@@ -3,6 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import PageHeader from '../../components/PageHeader.astro';
 import ContentCard from '../../components/ContentCard.astro';
 import TagFilter from '../../components/TagFilter.astro';
+import SortDropdown from '../../components/SortDropdown.astro';
 import JsonLd from '../../components/JsonLd.astro';
 import { getCollection } from 'astro:content';
 
@@ -53,14 +54,23 @@ function formatEventDate(date: Date, endDate?: Date): string {
   />
 
   <section class="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
-    <TagFilter tags={allTags} />
+    <div class="flex flex-wrap items-start justify-between gap-4 mb-2">
+      <div class="flex-1 min-w-0"><TagFilter tags={allTags} /></div>
+      <SortDropdown
+        options={[
+          { value: 'date', label: 'Event Date' },
+          { value: 'title', label: 'Title A–Z' },
+        ]}
+        defaultValue="date"
+      />
+    </div>
 
     <!-- Upcoming Events -->
     <h2 class="mb-6 mt-8 text-2xl font-bold text-gray-900 dark:text-light">📅 Upcoming Events</h2>
     {upcoming.length > 0 ? (
-      <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div id="upcoming-grid" class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {upcoming.map((event) => (
-          <div class="flex flex-col" data-tags={event.data.tags.join(',')}>
+          <div class="flex flex-col" data-tags={event.data.tags.join(',')} data-sort-date={new Date(event.data.date).getTime()} data-sort-title={event.data.title.toLowerCase()}>
             <ContentCard
               title={event.data.title}
               description={event.data.description}
@@ -97,10 +107,9 @@ function formatEventDate(date: Date, endDate?: Date): string {
     <!-- Past Events -->
     <h2 class="mb-6 mt-16 text-2xl font-bold text-gray-900 dark:text-light">🕒 Past Events</h2>
     {past.length > 0 ? (
-      <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div id="past-grid" class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {past.map((event) => (
-          <div class="flex flex-col opacity-75" data-tags={event.data.tags.join(',')}>
-            <ContentCard
+          <div class="flex flex-col opacity-75" data-tags={event.data.tags.join(',')} data-sort-date={new Date(event.data.date).getTime()} data-sort-title={event.data.title.toLowerCase()}>            <ContentCard
               title={event.data.title}
               description={event.data.description}
               url={event.data.url}
@@ -131,4 +140,30 @@ function formatEventDate(date: Date, endDate?: Date): string {
       </div>
     )}
   </section>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const upcomingGrid = document.getElementById('upcoming-grid');
+      const pastGrid = document.getElementById('past-grid');
+
+      document.addEventListener('sort-change', ((e: CustomEvent) => {
+        const sortKey = e.detail.value;
+
+        [upcomingGrid, pastGrid].forEach((grid, idx) => {
+          if (!grid) return;
+          const items = [...grid.children] as HTMLElement[];
+          if (sortKey === 'title') {
+            items.sort((a, b) => (a.getAttribute('data-sort-title') || '').localeCompare(b.getAttribute('data-sort-title') || ''));
+          } else {
+            // Upcoming: ascending (soonest first), Past: descending (most recent first)
+            items.sort((a, b) => {
+              const diff = Number(a.getAttribute('data-sort-date')) - Number(b.getAttribute('data-sort-date'));
+              return idx === 0 ? diff : -diff;
+            });
+          }
+          items.forEach((item) => grid.appendChild(item));
+        });
+      }) as EventListener);
+    });
+  </script>
 </BaseLayout>
