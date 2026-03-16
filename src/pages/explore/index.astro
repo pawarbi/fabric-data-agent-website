@@ -78,20 +78,36 @@ const contentData = JSON.stringify(contentNodes);
   />
 
   <section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-16">
-    <!-- Legend -->
-    <div class="mb-6 flex flex-wrap items-center gap-4 text-sm">
-      <span class="flex items-center gap-1.5"><span class="h-3 w-3 rounded-full bg-[#00D4AA]"></span> <span class="text-gray-500 dark:text-muted">Article</span></span>
-      <span class="flex items-center gap-1.5"><span class="h-3 w-3 rounded-full bg-[#8B5CF6]"></span> <span class="text-gray-500 dark:text-muted">Video</span></span>
-      <span class="flex items-center gap-1.5"><span class="h-3 w-3 rounded-full bg-[#F59E0B]"></span> <span class="text-gray-500 dark:text-muted">Resource</span></span>
-      <span class="flex items-center gap-1.5"><span class="h-3 w-3 rounded-full bg-[#EF4444]"></span> <span class="text-gray-500 dark:text-muted">Event</span></span>
-      <span class="flex items-center gap-1.5"><span class="h-3 w-3 rounded-full bg-[#3B82F6]"></span> <span class="text-gray-500 dark:text-muted">Tool</span></span>
-      <span class="flex items-center gap-1.5"><span class="h-3 w-3 rounded-full bg-[#EC4899]"></span> <span class="text-gray-500 dark:text-muted">LinkedIn</span></span>
-      <span class="flex items-center gap-1.5"><span class="h-3 w-3 rounded-full bg-[#6B7280] opacity-60"></span> <span class="text-gray-500 dark:text-muted">Tag</span></span>
+    <!-- Search + Legend row -->
+    <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex flex-wrap items-center gap-4 text-sm">
+        <span class="flex items-center gap-1.5"><span class="h-3 w-3 rounded-full bg-[#00D4AA]"></span> <span class="text-gray-500 dark:text-muted">Article</span></span>
+        <span class="flex items-center gap-1.5"><span class="h-3 w-3 rounded-full bg-[#8B5CF6]"></span> <span class="text-gray-500 dark:text-muted">Video</span></span>
+        <span class="flex items-center gap-1.5"><span class="h-3 w-3 rounded-full bg-[#F59E0B]"></span> <span class="text-gray-500 dark:text-muted">Resource</span></span>
+        <span class="flex items-center gap-1.5"><span class="h-3 w-3 rounded-full bg-[#EF4444]"></span> <span class="text-gray-500 dark:text-muted">Event</span></span>
+        <span class="flex items-center gap-1.5"><span class="h-3 w-3 rounded-full bg-[#3B82F6]"></span> <span class="text-gray-500 dark:text-muted">Tool</span></span>
+        <span class="flex items-center gap-1.5"><span class="h-3 w-3 rounded-full bg-[#EC4899]"></span> <span class="text-gray-500 dark:text-muted">LinkedIn</span></span>
+        <span class="flex items-center gap-1.5"><span class="h-3 w-3 rounded-full bg-[#6B7280] opacity-60"></span> <span class="text-gray-500 dark:text-muted">Tag</span></span>
+      </div>
+      <div class="relative">
+        <input id="graph-search" type="text" placeholder="Search nodes..." class="w-48 rounded-lg border border-gray-200 dark:border-indigo/20 bg-white dark:bg-dark/40 px-3 py-1.5 text-sm text-gray-700 dark:text-muted placeholder-gray-400 dark:placeholder-muted/50 focus:outline-none focus:ring-2 focus:ring-teal/40" />
+      </div>
     </div>
 
     <!-- Graph container -->
     <div id="graph-container" class="relative w-full rounded-xl border border-gray-200 dark:border-indigo/20 bg-white dark:bg-dark/40 overflow-hidden" style="height: 600px;">
       <svg id="graph-svg" class="w-full h-full"></svg>
+      <div class="absolute top-3 right-3 flex flex-col gap-1.5">
+        <button onclick="window._zoomIn && window._zoomIn()" class="flex items-center justify-center w-8 h-8 rounded-lg border border-gray-200 dark:border-indigo/20 bg-white dark:bg-dark/60 text-gray-600 dark:text-muted hover:bg-gray-50 dark:hover:bg-dark/80 transition-colors shadow-sm" title="Zoom in">
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M12 6v12M6 12h12" /></svg>
+        </button>
+        <button onclick="window._zoomOut && window._zoomOut()" class="flex items-center justify-center w-8 h-8 rounded-lg border border-gray-200 dark:border-indigo/20 bg-white dark:bg-dark/60 text-gray-600 dark:text-muted hover:bg-gray-50 dark:hover:bg-dark/80 transition-colors shadow-sm" title="Zoom out">
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M6 12h12" /></svg>
+        </button>
+        <button onclick="window._fitGraph && window._fitGraph()" class="flex items-center justify-center w-8 h-8 rounded-lg border border-gray-200 dark:border-indigo/20 bg-white dark:bg-dark/60 text-gray-600 dark:text-muted hover:bg-gray-50 dark:hover:bg-dark/80 transition-colors shadow-sm" title="Fit to view">
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" /></svg>
+        </button>
+      </div>
     </div>
 
     <!-- Tooltip -->
@@ -202,6 +218,31 @@ const contentData = JSON.stringify(contentNodes);
 
     svg.call(zoom);
 
+    // Fit graph to viewport
+    function fitGraph() {
+      var bounds = g.node().getBBox();
+      if (bounds.width === 0 || bounds.height === 0) return;
+      var padding = 40;
+      var scale = Math.min(
+        width / (bounds.width + padding * 2),
+        height / (bounds.height + padding * 2)
+      );
+      scale = Math.min(Math.max(scale, 0.3), 1.5);
+      var tx = width / 2 - (bounds.x + bounds.width / 2) * scale;
+      var ty = height / 2 - (bounds.y + bounds.height / 2) * scale;
+      svg.transition().duration(500).call(
+        zoom.transform,
+        d3.zoomIdentity.translate(tx, ty).scale(scale)
+      );
+    }
+    window._fitGraph = fitGraph;
+    window._zoomIn = function() {
+      svg.transition().duration(300).call(zoom.scaleBy, 1.4);
+    };
+    window._zoomOut = function() {
+      svg.transition().duration(300).call(zoom.scaleBy, 0.7);
+    };
+
     // Draw links
     var link = g.append('g')
       .selectAll('line')
@@ -247,22 +288,38 @@ const contentData = JSON.stringify(contentNodes);
       .attr('font-family', 'Inter, sans-serif')
       .attr('pointer-events', 'none');
 
-    // Hover effects
-    node.on('mouseover', function(event, d) {
-      d3.select(this).select('circle')
-        .transition().duration(200)
-        .attr('opacity', 1)
-        .attr('stroke-width', 4)
-        .attr('stroke-opacity', 0.6);
+    // Hover effects — dim unconnected nodes
+    var linkedNodes = {};
+    data.links.forEach(function(l) {
+      var sid = l.source.id || l.source;
+      var tid = l.target.id || l.target;
+      if (!linkedNodes[sid]) linkedNodes[sid] = [];
+      if (!linkedNodes[tid]) linkedNodes[tid] = [];
+      linkedNodes[sid].push(tid);
+      linkedNodes[tid].push(sid);
+    });
 
-      link.attr('stroke', function(l) {
-        if ((l.source.id || l.source) === d.id || (l.target.id || l.target) === d.id) {
-          return colors[d.type] || '#00D4AA';
-        }
-        return document.documentElement.classList.contains('dark') ? 'rgba(45, 43, 127, 0.15)' : 'rgba(200, 200, 220, 0.3)';
-      }).attr('stroke-width', function(l) {
-        return ((l.source.id || l.source) === d.id || (l.target.id || l.target) === d.id) ? 2 : 1;
-      });
+    node.on('mouseover', function(event, d) {
+      var connected = new Set(linkedNodes[d.id] || []);
+      connected.add(d.id);
+
+      node.select('circle')
+        .transition().duration(200)
+        .attr('opacity', function(n) { return connected.has(n.id) ? 1 : 0.1; });
+      node.select('text')
+        .transition().duration(200)
+        .attr('opacity', function(n) { return connected.has(n.id) ? 1 : 0.1; });
+
+      link
+        .transition().duration(200)
+        .attr('stroke', function(l) {
+          if ((l.source.id || l.source) === d.id || (l.target.id || l.target) === d.id) {
+            return colors[d.type] || '#00D4AA';
+          }
+          return 'transparent';
+        }).attr('stroke-width', function(l) {
+          return ((l.source.id || l.source) === d.id || (l.target.id || l.target) === d.id) ? 2 : 1;
+        });
 
       tooltipTitle.textContent = d.title;
       tooltipType.textContent = d.group === 'tag' ? 'tag' : d.type;
@@ -275,17 +332,47 @@ const contentData = JSON.stringify(contentNodes);
       tooltip.style.top = (event.pageY - 10) + 'px';
     })
     .on('mouseout', function() {
-      d3.select(this).select('circle')
+      node.select('circle')
         .transition().duration(200)
         .attr('opacity', function(d) { return d.group === 'tag' ? 0.5 : 0.9; })
         .attr('stroke-width', 2)
         .attr('stroke-opacity', 0.3);
+      node.select('text')
+        .transition().duration(200)
+        .attr('opacity', 1);
 
-      link.attr('stroke', function() {
-        return document.documentElement.classList.contains('dark') ? 'rgba(45, 43, 127, 0.3)' : 'rgba(200, 200, 220, 0.5)';
-      }).attr('stroke-width', 1);
+      link
+        .transition().duration(200)
+        .attr('stroke', function() {
+          return document.documentElement.classList.contains('dark') ? 'rgba(45, 43, 127, 0.3)' : 'rgba(200, 200, 220, 0.5)';
+        }).attr('stroke-width', 1);
 
       tooltip.classList.add('hidden');
+    });
+
+    // Search highlighting
+    var searchInput = document.getElementById('graph-search');
+    searchInput.addEventListener('input', function() {
+      var query = this.value.toLowerCase().trim();
+      if (!query) {
+        node.select('circle').attr('opacity', function(d) { return d.group === 'tag' ? 0.5 : 0.9; });
+        node.select('text').attr('opacity', 1);
+        link.attr('stroke', function() {
+          return document.documentElement.classList.contains('dark') ? 'rgba(45, 43, 127, 0.3)' : 'rgba(200, 200, 220, 0.5)';
+        });
+        return;
+      }
+      var matches = new Set();
+      data.nodes.forEach(function(n) {
+        if (n.title.toLowerCase().includes(query)) matches.add(n.id);
+      });
+      node.select('circle').attr('opacity', function(d) { return matches.has(d.id) ? 1 : 0.08; });
+      node.select('text').attr('opacity', function(d) { return matches.has(d.id) ? 1 : 0.08; });
+      link.attr('stroke', function(l) {
+        var sid = l.source.id || l.source;
+        var tid = l.target.id || l.target;
+        return (matches.has(sid) || matches.has(tid)) ? 'rgba(0, 212, 170, 0.4)' : 'transparent';
+      });
     });
 
     // Click handler
@@ -321,6 +408,11 @@ const contentData = JSON.stringify(contentNodes);
         .attr('y2', function(d) { return d.target.y; });
 
       node.attr('transform', function(d) { return 'translate(' + d.x + ',' + d.y + ')'; });
+    });
+
+    var initialFitDone = false;
+    simulation.on('end', function() {
+      if (!initialFitDone) { fitGraph(); initialFitDone = true; }
     });
 
     // Drag functions
