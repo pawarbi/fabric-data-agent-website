@@ -13,7 +13,7 @@ today.setHours(0, 0, 0, 0);
 
 const upcoming = allEvents
   .filter((e) => new Date(e.data.endDate ?? e.data.date) >= today)
-  .sort((a, b) => new Date(a.data.date).getTime() - new Date(b.data.date).getTime());
+  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
 
 const past = allEvents
   .filter((e) => new Date(e.data.endDate ?? e.data.date) < today)
@@ -155,11 +155,8 @@ function formatEventDate(date: Date, endDate?: Date): string {
           if (sortKey === 'title') {
             items.sort((a, b) => (a.getAttribute('data-sort-title') || '').localeCompare(b.getAttribute('data-sort-title') || ''));
           } else {
-            // Upcoming: ascending (soonest first), Past: descending (most recent first)
-            items.sort((a, b) => {
-              const diff = Number(a.getAttribute('data-sort-date')) - Number(b.getAttribute('data-sort-date'));
-              return idx === 0 ? diff : -diff;
-            });
+            // Both sections: newest first (descending)
+            items.sort((a, b) => Number(b.getAttribute('data-sort-date')) - Number(a.getAttribute('data-sort-date')));
           }
           items.forEach((item) => grid.appendChild(item));
         });
