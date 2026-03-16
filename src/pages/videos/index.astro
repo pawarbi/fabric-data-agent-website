@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import TagFilter from '../../components/TagFilter.astro';
 import SortDropdown from '../../components/SortDropdown.astro';
+import ViewToggle from '../../components/ViewToggle.astro';
 import PageHeader from '../../components/PageHeader.astro';
 import JsonLd from '../../components/JsonLd.astro';
 
@@ -31,13 +32,16 @@ const allTags = [...new Set(videos.flatMap((v) => v.data.tags))].sort();
   <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
     <div class="flex flex-wrap items-start justify-between gap-4 mb-2">
       <div class="flex-1 min-w-0">{allTags.length > 0 && <TagFilter tags={allTags} />}</div>
-      <SortDropdown
-        options={[
-          { value: 'published', label: 'Published Date' },
-          { value: 'title', label: 'Title A–Z' },
-        ]}
-        defaultValue="published"
-      />
+      <div class="flex items-center gap-3">
+        <SortDropdown
+          options={[
+            { value: 'published', label: 'Published Date' },
+            { value: 'title', label: 'Title A–Z' },
+          ]}
+          defaultValue="published"
+        />
+        <ViewToggle gridId="videos-grid" listId="videos-list" />
+      </div>
     </div>
 
     {videos.length === 0 ? (
@@ -102,23 +106,54 @@ const allTags = [...new Set(videos.flatMap((v) => v.data.tags))].sort();
           </div>
         ))}
       </div>
+
+      <div id="videos-list" class="hidden space-y-1 mt-8">
+        {videos.map((video) => (
+          <div
+            class="group flex items-center gap-3 rounded-lg px-3 py-2 transition-colors hover:bg-teal/5 dark:hover:bg-teal/10 cursor-pointer"
+            data-sort-publish={new Date(video.data.publishDate).getTime()}
+            data-sort-title={video.data.title.toLowerCase()}
+            data-tags={video.data.tags.join(',')}
+            data-flyout
+            data-flyout-title={video.data.title}
+            data-flyout-description={video.data.description}
+            data-flyout-url={`https://www.youtube.com/watch?v=${video.data.youtubeId}`}
+            data-flyout-type="video"
+            data-flyout-date={new Date(video.data.publishDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+            data-flyout-author={video.data.speaker}
+          >
+            <span class="text-xs text-gray-400 dark:text-muted/60 whitespace-nowrap w-24 shrink-0">
+              {new Date(video.data.publishDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+            </span>
+            <span class="text-sm font-medium text-gray-900 dark:text-light group-hover:text-teal transition-colors truncate">
+              {video.data.title}
+            </span>
+            <span class="ml-auto text-xs text-gray-400 dark:text-muted/60 whitespace-nowrap shrink-0">
+              {video.data.speaker}
+            </span>
+          </div>
+        ))}
+      </div>
     )}
   </section>
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const grid = document.getElementById('videos-grid');
-      if (!grid) return;
+      const list = document.getElementById('videos-list');
+      if (!grid || !list) return;
 
       document.addEventListener('sort-change', ((e: CustomEvent) => {
         const sortKey = e.detail.value;
-        const items = [...grid.children] as HTMLElement[];
-        if (sortKey === 'title') {
-          items.sort((a, b) => (a.getAttribute('data-sort-title') || '').localeCompare(b.getAttribute('data-sort-title') || ''));
-        } else {
-          items.sort((a, b) => Number(b.getAttribute('data-sort-publish')) - Number(a.getAttribute('data-sort-publish')));
-        }
-        items.forEach((item) => grid.appendChild(item));
+        [grid, list].forEach((container) => {
+          const items = [...container.children] as HTMLElement[];
+          if (sortKey === 'title') {
+            items.sort((a, b) => (a.getAttribute('data-sort-title') || '').localeCompare(b.getAttribute('data-sort-title') || ''));
+          } else {
+            items.sort((a, b) => Number(b.getAttribute('data-sort-publish')) - Number(a.getAttribute('data-sort-publish')));
+          }
+          items.forEach((item) => container.appendChild(item));
+        });
       }) as EventListener);
     });
   </script>
