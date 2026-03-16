@@ -11,8 +11,8 @@ body:
     id: url
     attributes:
       label: Event URL
-      description: Link to the event page or registration.
-      placeholder: "https://example.com/event"
+      description: Must start with https://
+      placeholder: "https://developer.microsoft.com/en-us/reactor/events/my-event"
     validations:
       required: true
 
@@ -20,7 +20,7 @@ body:
     id: date
     attributes:
       label: Event Date
-      description: When the event takes place (YYYY-MM-DD).
+      description: Format YYYY-MM-DD
       placeholder: "2026-06-15"
     validations:
       required: true

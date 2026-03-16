@@ -11,7 +11,7 @@ body:
     id: url
     attributes:
       label: Tool URL
-      description: Link to the tool's homepage, repository, or documentation.
+      description: Must start with https://
       placeholder: "https://github.com/example/tool"
     validations:
       required: true
