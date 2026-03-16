@@ -16,7 +16,7 @@ const posts = allPosts.sort(
 const allTags = [...new Set(posts.flatMap((p) => p.data.tags))].sort();
 
 function extractLinkedInActivityId(url: string): string | null {
-  const match = url.match(/activity-(\d+)/);
+  const match = url.match(/activity[:\-](\d+)/);
   return match ? match[1] : null;
 }
 ---
