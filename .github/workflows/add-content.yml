@@ -131,13 +131,13 @@ jobs:
               }
             }
 
-            // Check if URL already exists in any content file
-            function checkDuplicateUrl(url) {
+            // Check if URL already exists within the same content section
+            function checkDuplicateUrl(url, sectionDir) {
               if (!url) return null;
               const fs = require('fs');
               const path = require('path');
               const normalized = normalizeUrl(url);
-              const contentBase = 'src/content';
+              const sectionPath = path.join('src/content', sectionDir);
 
               function scanDir(dir) {
                 if (!fs.existsSync(dir)) return null;
@@ -165,7 +165,7 @@ jobs:
                 return null;
               }
 
-              return scanDir(contentBase);
+              return scanDir(sectionPath);
             }
 
             // Extract YouTube video ID from URL or raw ID
@@ -206,7 +206,7 @@ jobs:
               if (!url) errors.push('Article URL is missing or invalid (must be a full URL starting with http)');
               if (!summary) errors.push('Summary is required');
 
-              const dupFile = checkDuplicateUrl(url);
+              const dupFile = checkDuplicateUrl(url, contentDir);
               if (dupFile) errors.push(`This URL has already been submitted in \`${dupFile}\``);
 
               if (errors.length === 0) {
@@ -261,7 +261,7 @@ jobs:
               if (!url) errors.push('Resource URL is missing or invalid');
               if (!description) errors.push('Description is required');
 
-              const dupFile = checkDuplicateUrl(url);
+              const dupFile = checkDuplicateUrl(url, contentDir);
               if (dupFile) errors.push(`This URL has already been submitted in \`${dupFile}\``);
 
               if (errors.length === 0) {
@@ -298,7 +298,7 @@ jobs:
                 errors.push(`Event Type must be one of: ${validTypes.join(', ')}`);
               }
 
-              const dupFile = checkDuplicateUrl(url);
+              const dupFile = checkDuplicateUrl(url, contentDir);
               if (dupFile) errors.push(`This URL has already been submitted in \`${dupFile}\``);
 
               if (errors.length === 0) {
@@ -331,7 +331,7 @@ jobs:
               if (!url) errors.push('Tool URL is missing or invalid');
               if (!description) errors.push('Description is required');
 
-              const dupFile = checkDuplicateUrl(url);
+              const dupFile = checkDuplicateUrl(url, contentDir);
               if (dupFile) errors.push(`This URL has already been submitted in \`${dupFile}\``);
 
               if (errors.length === 0) {
@@ -358,7 +358,7 @@ jobs:
               if (!linkedinUrl) errors.push('LinkedIn Post URL is missing or invalid');
               if (!description) errors.push('Description is required');
 
-              const dupFile = checkDuplicateUrl(linkedinUrl);
+              const dupFile = checkDuplicateUrl(linkedinUrl, contentDir);
               if (dupFile) errors.push(`This URL has already been submitted in \`${dupFile}\``);
 
               if (errors.length === 0) {
