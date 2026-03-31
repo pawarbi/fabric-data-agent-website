@@ -12,11 +12,23 @@
   <!-- Close button -->
   <div class="sticky top-0 z-10 flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-indigo/20 bg-white/90 dark:bg-dark/90 backdrop-blur-sm">
     <span id="flyout-type-badge" class="inline-flex items-center gap-1 rounded-md bg-gray-100 dark:bg-indigo/20 px-2.5 py-1 text-xs font-medium capitalize text-gray-500 dark:text-muted"></span>
-    <button id="flyout-close" class="rounded-lg p-2 text-gray-400 dark:text-muted hover:text-gray-900 dark:hover:text-light hover:bg-gray-100 dark:hover:bg-indigo/10 transition-colors" aria-label="Close preview">
+    <div class="flex items-center gap-1">
+      <!-- Share / Copy link button -->
+      <button id="flyout-share" class="relative rounded-lg p-2 bg-teal/15 text-teal hover:bg-teal/25 dark:bg-teal/20 dark:text-teal dark:hover:bg-teal/30 transition-colors" aria-label="Copy link to clipboard">
+        <svg id="flyout-share-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+        </svg>
+        <svg id="flyout-share-check" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden text-teal" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+        </svg>
+        <span id="flyout-share-tooltip" class="absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded bg-gray-900 dark:bg-indigo px-2 py-1 text-xs text-white opacity-0 pointer-events-none transition-opacity duration-200">Copied!</span>
+      </button>
+      <button id="flyout-close" class="rounded-lg p-2 text-gray-400 dark:text-muted hover:text-gray-900 dark:hover:text-light hover:bg-gray-100 dark:hover:bg-indigo/10 transition-colors" aria-label="Close preview">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
       </svg>
     </button>
+    </div>
   </div>
 
   <!-- Content -->
@@ -87,11 +99,37 @@ function initFlyout() {
   const backdrop = document.getElementById('flyout-backdrop');
   const panel = document.getElementById('flyout-panel');
   const closeBtn = document.getElementById('flyout-close');
+  const shareBtn = document.getElementById('flyout-share');
+  const shareIcon = document.getElementById('flyout-share-icon');
+  const shareCheck = document.getElementById('flyout-share-check');
+  const shareTooltip = document.getElementById('flyout-share-tooltip');
+
+  let currentUrl = '';
 
   if (!backdrop || !panel) return;
 
+  // Share button: copy current URL to clipboard
+  shareBtn?.addEventListener('click', async () => {
+    if (!currentUrl) return;
+    try {
+      await navigator.clipboard.writeText(currentUrl);
+      shareIcon?.classList.add('hidden');
+      shareCheck?.classList.remove('hidden');
+      shareTooltip?.classList.remove('opacity-0');
+      shareTooltip?.classList.add('opacity-100');
+      if (typeof umami !== 'undefined') umami.track('share-click', { url: currentUrl });
+      setTimeout(() => {
+        shareIcon?.classList.remove('hidden');
+        shareCheck?.classList.add('hidden');
+        shareTooltip?.classList.remove('opacity-100');
+        shareTooltip?.classList.add('opacity-0');
+      }, 2000);
+    } catch { /* clipboard not available */ }
+  });
+
   function openFlyout(data: Record<string, string>) {
     if (!panel || !backdrop) return;
+    currentUrl = data.url || '';
     const typeIcons: Record<string, string> = { article: '📄', resource: '📚', video: '🎬', event: '📅', tool: '🔧', linkedin: '💼' };
     const ctaText: Record<string, string> = { article: 'Read Article', resource: 'Open Resource', video: 'Watch on YouTube', event: 'View Event', tool: 'Open Tool', linkedin: 'View on LinkedIn' };
 
