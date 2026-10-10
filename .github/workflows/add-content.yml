@@ -33,7 +33,7 @@ jobs:
 
       - name: Parse issue and create content file
         id: parse
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const issue = context.payload.issue;
@@ -474,7 +474,7 @@ jobs:
 
       - name: Comment and close issue
         if: success()
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const issueNumber = parseInt(process.env.ISSUE_NUMBER);
@@ -498,7 +498,7 @@ jobs:
 
       - name: Report build failure on issue
         if: failure() && env.ISSUE_NUMBER != ''
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const issueNumber = parseInt(process.env.ISSUE_NUMBER);
